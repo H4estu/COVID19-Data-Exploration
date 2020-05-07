@@ -7,12 +7,12 @@ library(RPostgreSQL)
 library(mapview)
 
 # source('C:/Users/zach/Documents/Code/COVID19-Data-Exploration/scripts/R/session2/insert_report_data.R')
-drv <- dbDriver("PostgreSQL")
-con <- dbConnect(drv, dbname = "Control_Test",
-                 host = "10.12.50.107", port = 5432, 
-                 user = 'covid_users', password = 'thissucks19')
-report_data.dt <- dbGetQuery(con, 'SELECT * FROM covid_data.report_data')
-dbDisconnect(con)
+# -------- Access the COVID-19 Database --------- #
+source(file.path(git.path,'Code/COVID19-Data-Exploration/scripts/R/db_config.R'))
+con <- db_connect.fn()
+full.dt<-dbGetQuery(con,'SELECT * FROM covid_data.report_data') %>% data.table
+dbDisconnect(con)  
+# ----------------------------------------------- #
 
 # remove NA's 
 report_data.dt <- report_data.dt[!is.na(report_data.dt$latitude) & 

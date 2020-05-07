@@ -4,10 +4,10 @@ library(RPostgreSQL)
 library(magrittr)
 
 
-drv <- dbDriver("PostgreSQL")
-con <- dbConnect(drv, dbname = "Control_Test",
-                 host = "10.12.50.107", port = 5432, 
-                 user = 'covid_users', password = 'thissucks19')
+# -------- Access the COVID-19 Database --------- #
+source(file.path(git.path,'Code/COVID19-Data-Exploration/scripts/R/db_config.R'))
+con <- db_connect.fn()
+# ----------------------------------------------- #
 
 report_data <- dbGetQuery(con, 'SELECT * FROM covid_data.dummy_table') %>% data.table
 

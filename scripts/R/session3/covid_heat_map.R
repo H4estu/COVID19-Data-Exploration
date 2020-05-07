@@ -13,14 +13,15 @@ library(maps)
 library(RColorBrewer)
 library(gridExtra)
 
-#### Access the COVID-19 Database ####
-drv <- dbDriver("PostgreSQL")
-con <- dbConnect(drv, dbname = "Control_Test",
-                 host = "10.12.50.107", port = 5432, 
-                 user = 'covid_users', password = 'thissucks19')
+
+git.path <- Sys.getenv('HOME')  # Where the base COVID19-Data-Exploration folder lives.
+
+# -------- Access the COVID-19 Database --------- #
+source(file.path(git.path,'Code/COVID19-Data-Exploration/scripts/R/db_config.R'))
+con <- db_connect.fn()
 full.dt<-dbGetQuery(con,'SELECT * FROM covid_data.report_data') %>% data.table
-dbDisconnect(con)
-#####################################
+dbDisconnect(con)  
+# ----------------------------------------------- #
 
 ### Summary of Oregon cases using the same method that Zach presented in the first class ###
 oregon_cases.dt <- full.dt[which((grepl(', OR', full.dt$province_state) | full.dt$province_state =='Oregon') & !is.na(full.dt$latitude)),] %>% 
