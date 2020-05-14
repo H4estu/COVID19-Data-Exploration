@@ -10,17 +10,62 @@ output: html_document
 knitr::opts_chunk$set(message=FALSE)
 ```
 
-## Databases - Storing and Managing Data
+## Session Overview
 This week as part of the series, Kyle introduced us to some basic database management
-by moving the csv data that we dowloaded from the [*JHU CSSE database*](https://github.com/CSSEGISandData/COVID-19) to a local Postgres instance on his machine and demoing some simple commands.
+by moving the csv data that we dowloaded from the [JHU CSSE database](https://github.com/CSSEGISandData/COVID-19) to a local PostgresSQL instance on his machine and demoing some simple commands.  The main 
+updates to the code in the session were:
 
+* Instead of downloading every csv from the John's Hopkins database every time we
+run the script, only the most recent csv files (i.e. the ones missing from the **data/** directory) are downloaded, and they are automatically inserted into the database hosted on Kyle's work computer ([*insert_report_data.R*](https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/insert_report_data.R)).
+* A dummy dataset for folks to test out SQL commands ([*simple_database_queries.R*](https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/simple_database_queries.R)).
+* A basic example of generating a map of the COVID-19 dataset using the **sf** package in R ([*sf_example_simple.R*](https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/sf_example_simple.R)).
+
+Check out the [scripts in our GitHub repository](https://github.com/H4estu/COVID19-Data-Exploration/tree/Rmarkdown/scripts/R/session2)
+to see everything we did.  
+
+## Database-ics
+Put simply, a database is a collection of entities that are stored together.
+Commonly, these entities are tables of data, such as the ones you might see
+when you open up an Excel spreadsheet.  A very simple example of a one-table database
+of carbon dioxide uptake in grass plants data is shown below.
+
+```{r echo=FALSE, fig.fullwidth=TRUE}
+library(magrittr)
+
+cap.label <- 'Visualization of a simple database with one table.'
+knitr::kable(CO2%>%dplyr::sample_n(.,10)%>%dplyr::mutate(id=seq(1:nrow(.))), caption=cap.label)
+```
+
+A key feature of databases are table keys (pun intended).  **Primary keys**, for instance, 
+help to organize the data so that it may be efficiently queried.  They also help
+to handle bad or null values in your table.  If you have more than one table
+in your database, **foreign keys** relate, or connect, the tables in your database
+to one another.  
+
+In the CO2 example above, we would use the **id** column as the primary key.  Since
+there are no other tables in the database, we have no need for a foreign key.  You 
+can explore this dataset further in R using **datasets::CO2**.
+
+
+PostgreSQL is one type of relational database management system (RDBMS), and
+it is the one we are using for the COVID-19 dataset, as well as for our various projects at work.  
+
+### Database Benefits 
+A benefit of using a database management system (DBMS) over other forms of data storage (such as an excel 
+or csv file that lives on someone's hard drive), is that DBMSs provide safe 
+and consistent means of accessing and manipulating the data.  Many DBMSs (such as PostgresSQL) achieive 
+this through what is known as *ACID-compliance*.  I won't go into the details here,
+but adherence to these guidelines resolves many of the problems we used to have with
+the parcel control sheet, such as people trying to read-from and write-to the control
+sheet simultaneously as well as handling an ever-growing list of digitized parcels.  I have
+linked an article on ACID-compliant databases at the end of this post if you care
+to read further on the topic.
 
 ### Some basic commands
-Here is a table of some basic SQL commands:
+Here are some basic SQL commands and their functionalities:
 ```{r echo=FALSE}
 library(data.table)
-library(knitr)
-library(magrittr)
+
 defs.list <- list('Fetch data from the database (i.e. query the database)',
                   'Edit existing rows in a table',
                   'Add new rows to a table',
@@ -29,16 +74,47 @@ defs.list <- list('Fetch data from the database (i.e. query the database)',
 
 defs.dt <- data.table('Command'=list('SELECT','UPDATE','INSERT','DELETE'),
                       'Definition'=defs.list)
-kable(defs.dt)
+knitr::kable(defs.dt)
 ```
 
+Use these commands to play around with the [dummy data provided by Kyle](https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/simple_database_queries.R).
 
-    
+
+There are other important features of databases such as relations, keys, and schemas
+that we won't go into detail here.  However there are plenty of resources online if you
+are interested in learning more!
+
+
+## A Simple Map Using **sf**
+The last thing we did in our previous session was to create a global map of the the
+COVID-19 dataset.  Each row in the dataset is represented as a point on the map.
+Below I've made a map of the cases in the continguious U.S.  I encourage you to 
+check out the code in the file [*sf_example_simple.R*](https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/sf_example_simple.R) and play around with it yourself!  Note: you will
+have to be connected to the VPN to access Kyle's computer.
+
+```{r echo=FALSE}
+knitr::include_graphics("https://github.com/H4estu/COVID19-Data-Exploration/blob/Rmarkdown/blog/content/post/session2/US_48_map.PNG")
+```
+
+If the above image does not render for you, you can view the [image here](https://github.com/H4estu/COVID19-Data-Exploration/blob/Rmarkdown/blog/content/post/session2/US_48_map.PNG).
+
+
+There are other important features of databases such as relations, keys, and schemas
+that we won't go into detail here.  However there are plenty of resources online if you
+are interested in learning more!
 
 ## Further reading
-See the following links for information on the following topics:
+See the following links for more information on the following topics:
 
-* [*Codecademy article on databases*](https://www.codecademy.com/articles/what-is-rdbms-sql).
+* [**Codecademy article on databases**](https://www.codecademy.com/articles/what-is-rdbms-sql).
 Codecademy is also a great place for you to get started with a number of programming languages
 on your own with simple introductory lessons for FREE.
+
+* [**ACID-compliant databases**](https://database.guide/what-is-acid-in-databases/) -- ensuring
+reliable transactions
+
+* [**sf**](https://cran.r-project.org/web/packages/sf/vignettes/sf1.html) -- package for
+creating simple features geometries in R.  This is an excellent way in R to create maps
+of geospatial vector data.  We use many aspects of sf in the production code for various projects
+to do geospatial operations such as intersections and unions.
 

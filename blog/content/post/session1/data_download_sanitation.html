@@ -131,42 +131,42 @@ data.dt[data.dt$Deaths%&gt;%is.na, &#39;Deaths&#39;] &lt;- 0
 data.dt[data.dt$Recovered%&gt;%is.na, &#39;Recovered&#39;] &lt;- 0
 
 data.dt</code></pre>
-<pre><code>##         FIPS     Admin2 Province_State Country_Region Last_Update       Lat
-##     1: 45001  Abbeville South Carolina             US  2020-03-24  34.22333
-##     2: 22001     Acadia      Louisiana             US  2020-03-24  30.29506
-##     3: 51001   Accomack       Virginia             US  2020-03-24  37.76707
-##     4: 16001        Ada          Idaho             US  2020-03-24  43.45266
-##     5: 19001      Adair           Iowa             US  2020-03-24  41.33076
-##    ---                                                                     
-## 91571:    NA                           Western Sahara  2020-04-12  24.21550
-## 91572:    NA                                    Yemen  2020-04-12  15.55273
-## 91573:    NA                                   Zambia  2020-04-12 -13.13390
-## 91574:    NA                                 Zimbabwe  2020-04-12 -19.01544
-## 91575:    NA unassigned           Utah             US  2020-04-12        NA
-##             Long_ Confirmed Deaths Recovered Active
-##     1:  -82.46171         1      0         0      0
-##     2:  -92.41420         2      0         0      0
-##     3:  -75.63235         1      0         0      0
-##     4: -116.24155        19      0         0      0
-##     5:  -94.47106         1      0         0      0
-##    ---                                             
-## 91571:  -12.88580         6      0         0      6
-## 91572:   48.51639         1      0         0      1
-## 91573:   27.84933        43      2        30     11
-## 91574:   29.15486        14      3         0     11
-## 91575:         NA         4      5         0     -1
-##                         Combined_Key Latitude Longitude
-##     1: Abbeville, South Carolina, US       NA        NA
-##     2:         Acadia, Louisiana, US       NA        NA
-##     3:        Accomack, Virginia, US       NA        NA
-##     4:                Ada, Idaho, US       NA        NA
-##     5:               Adair, Iowa, US       NA        NA
-##    ---                                                 
-## 91571:                Western Sahara       NA        NA
-## 91572:                         Yemen       NA        NA
-## 91573:                        Zambia       NA        NA
-## 91574:                      Zimbabwe       NA        NA
-## 91575:          unassigned, Utah, US       NA        NA</code></pre>
+<pre><code>##            Province_State Country_Region Last_Update Confirmed Deaths Recovered
+##      1:             Anhui Mainland China  2020-01-22         1      0         0
+##      2:           Beijing Mainland China  2020-01-22        14      0         0
+##      3:         Chongqing Mainland China  2020-01-22         6      0         0
+##      4:            Fujian Mainland China  2020-01-22         1      0         0
+##      5:             Gansu Mainland China  2020-01-22         0      0         0
+##     ---                                                                        
+## 127775:        Queensland      Australia  2020-04-27      1030      6       926
+## 127776:   South Australia      Australia  2020-04-27       438      4       411
+## 127777:          Tasmania      Australia  2020-04-27       212     11       123
+## 127778:          Victoria      Australia  2020-04-27      1349     17      1265
+## 127779: Western Australia      Australia  2020-04-27       549      8       486
+##         Latitude Longitude FIPS Admin2      Lat    Long_ Active
+##      1:       NA        NA   NA   &lt;NA&gt;       NA       NA     NA
+##      2:       NA        NA   NA   &lt;NA&gt;       NA       NA     NA
+##      3:       NA        NA   NA   &lt;NA&gt;       NA       NA     NA
+##      4:       NA        NA   NA   &lt;NA&gt;       NA       NA     NA
+##      5:       NA        NA   NA   &lt;NA&gt;       NA       NA     NA
+##     ---                                                        
+## 127775:       NA        NA   NA        -27.4698 153.0251     98
+## 127776:       NA        NA   NA        -34.9285 138.6007     23
+## 127777:       NA        NA   NA        -42.8821 147.3272     78
+## 127778:       NA        NA   NA        -37.8136 144.9631     67
+## 127779:       NA        NA   NA        -31.9505 115.8605     55
+##                         Combined_Key
+##      1:                         &lt;NA&gt;
+##      2:                         &lt;NA&gt;
+##      3:                         &lt;NA&gt;
+##      4:                         &lt;NA&gt;
+##      5:                         &lt;NA&gt;
+##     ---                             
+## 127775:        Queensland, Australia
+## 127776:   South Australia, Australia
+## 127777:          Tasmania, Australia
+## 127778:          Victoria, Australia
+## 127779: Western Australia, Australia</code></pre>
 </div>
 <div id="select-country" class="section level3">
 <h3>Select Country</h3>
@@ -248,6 +248,20 @@ country_cases.dt</code></pre>
 ## 49:  2020-04-10     30455  18849
 ## 50:  2020-04-11     32534  19468
 ## 51:  2020-04-12     34211  19899
+## 52:  2020-04-13     35435  20465
+## 53:  2020-04-14     37130  21067
+## 54:  2020-04-15     38092  21645
+## 55:  2020-04-16     40164  22170
+## 56:  2020-04-17     42727  22745
+## 57:  2020-04-18     44927  23227
+## 58:  2020-04-19     47055  23660
+## 59:  2020-04-20     48877  24114
+## 60:  2020-04-21     51600  24648
+## 61:  2020-04-22     54543  25085
+## 62:  2020-04-24     57576  25549
+## 63:  2020-04-25     60498  25969
+## 64:  2020-04-26     63120  26384
+## 65:  2020-04-27     64928  26644
 ##     Last_Update Recovered Deaths</code></pre>
 <p>Here, we make separate data table for confirmed cases, since they are up to an
 order of magnitude higher than recovered/death reports. Visually it is easier to
@@ -271,7 +285,7 @@ cases each day since Jan. 22, 2020 for our country of interest.</p>
 ggplot(melted.dt, aes(x=Last_Update, y=Number.Reported)) +
     geom_point() + 
     geom_line()</code></pre>
-<p><img src="/post/data_download_sanitation_files/figure-html/plot-confirmed-1.png" width="672" /></p>
+<p><img src="/post/session1/data_download_sanitation_files/figure-html/plot-confirmed-1.png" width="672" /></p>
 <p>Here, we show the number of reported deaths and recoveries each day for our country
 of interest. Notice how different are the maximum values in the y-column s between
 this plot and the first one. This is why it was convenient to split them up this way,
@@ -281,7 +295,7 @@ otherwise these two plots would be very small and hard to read!</p>
 ggplot(melted.dt, aes(x=Last_Update, y=Number.Reported, color=Cases)) +
     geom_point() + 
     geom_line()</code></pre>
-<p><img src="/post/data_download_sanitation_files/figure-html/plot-cases-1.png" width="672" /></p>
+<p><img src="/post/session1/data_download_sanitation_files/figure-html/plot-cases-1.png" width="672" /></p>
 </div>
 </div>
 <div id="further-reading" class="section level1">
