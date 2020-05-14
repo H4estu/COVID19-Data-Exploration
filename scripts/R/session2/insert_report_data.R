@@ -64,11 +64,12 @@ dates.list <- lapply(csv.list, function(x) {
 }) %>% unlist 
 dates.list <- dates.list %>% lapply(., function(x){gsub('*.csv$', '', x)}) %>% unlist
 
-drv <- dbDriver("PostgreSQL")
-con <- dbConnect(drv, dbname = "Control_Test",
-                 host = "10.12.50.107", port = 5432, 
-                 user = 'covid_users', password = 'thissucks19')
+# -------- Access the COVID-19 Database --------- #
+source(file.path(git.path,'Code/COVID19-Data-Exploration/scripts/R/db_config.R'))
+con <- db_connect.fn()
+# ----------------------------------------------- #
 report_data <- dbGetQuery(con, 'SELECT last_update FROM covid_data.report_data')
+dbDisconnect(con)
 
 missing_dates <- setdiff(dates.list %>% paste, format(report_data$last_update, "%m-%d-%Y") %>% paste %>% unique)
 missing_dates <- dates.list[1:10]
