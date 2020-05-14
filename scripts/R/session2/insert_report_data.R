@@ -65,7 +65,7 @@ dates.list <- lapply(csv.list, function(x) {
 dates.list <- dates.list %>% lapply(., function(x){gsub('*.csv$', '', x)}) %>% unlist
 
 # -------- Access the COVID-19 Database --------- #
-source(file.path(git.path,'Code/COVID19-Data-Exploration/scripts/R/db_config.R'))
+source(file.path(git.path,'Code/config_files/db_config.R'))
 con <- db_connect.fn()
 # ----------------------------------------------- #
 report_data <- dbGetQuery(con, 'SELECT last_update FROM covid_data.report_data')

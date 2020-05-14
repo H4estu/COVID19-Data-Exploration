@@ -17,7 +17,7 @@ library(gridExtra)
 git.path <- Sys.getenv('HOME')  # Where the base COVID19-Data-Exploration folder lives.
 
 # -------- Access the COVID-19 Database --------- #
-source(file.path(git.path,'Code/COVID19-Data-Exploration/scripts/R/db_config.R'))
+source(file.path(git.path,'Code/config_files/db_config.R'))
 con <- db_connect.fn()
 full.dt<-dbGetQuery(con,'SELECT * FROM covid_data.report_data') %>% data.table
 dbDisconnect(con)  

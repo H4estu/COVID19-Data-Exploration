@@ -8,7 +8,7 @@ library(mapview)
 
 # source('C:/Users/zach/Documents/Code/COVID19-Data-Exploration/scripts/R/session2/insert_report_data.R')
 # -------- Access the COVID-19 Database --------- #
-source(file.path(git.path,'Code/COVID19-Data-Exploration/scripts/R/db_config.R'))
+source(file.path(git.path,'Code/config_files/db_config.R'))
 con <- db_connect.fn()
 full.dt<-dbGetQuery(con,'SELECT * FROM covid_data.report_data') %>% data.table
 dbDisconnect(con)  
