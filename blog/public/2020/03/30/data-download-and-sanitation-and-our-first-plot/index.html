@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Hugo 0.68.3" />
+<meta name="generator" content="Hugo 0.70.0" />
 
 
 <title>Data Download and Sanitation (and our first plot!) - Bio-Team Development</title>
@@ -64,7 +64,7 @@
 
   <article class="article">
     
-    <span class="article-duration">9 min read</span>
+    <span class="article-duration">10 min read</span>
     
 
     <h1 class="article-title">Data Download and Sanitation (and our first plot!)</h1>
@@ -94,8 +94,9 @@ us to download a webpage and extract all of the text from it in just a few simpl
 lines of code! A few commonly used libraries include <strong>data.table</strong>, <strong>dplyr</strong>, and
 <strong>magrittr</strong>, all of which we will go into later.</p>
 <pre class="r"><code>library(magrittr)
-library(xml2)
-library(lubridate)
+library(xml2)</code></pre>
+<pre><code>## Warning: package &#39;xml2&#39; was built under R version 3.6.3</code></pre>
+<pre class="r"><code>library(lubridate)
 library(data.table)
 library(dplyr)
 library(ggplot2)</code></pre>
@@ -201,42 +202,42 @@ data.dt[data.dt$Deaths%&gt;%is.na, &#39;Deaths&#39;] &lt;- 0
 data.dt[data.dt$Recovered%&gt;%is.na, &#39;Recovered&#39;] &lt;- 0
 
 data.dt</code></pre>
-<pre><code>##         FIPS     Admin2 Province_State Country_Region Last_Update       Lat
-##     1: 45001  Abbeville South Carolina             US  2020-03-24  34.22333
-##     2: 22001     Acadia      Louisiana             US  2020-03-24  30.29506
-##     3: 51001   Accomack       Virginia             US  2020-03-24  37.76707
-##     4: 16001        Ada          Idaho             US  2020-03-24  43.45266
-##     5: 19001      Adair           Iowa             US  2020-03-24  41.33076
-##    ---                                                                     
-## 91571:    NA                           Western Sahara  2020-04-12  24.21550
-## 91572:    NA                                    Yemen  2020-04-12  15.55273
-## 91573:    NA                                   Zambia  2020-04-12 -13.13390
-## 91574:    NA                                 Zimbabwe  2020-04-12 -19.01544
-## 91575:    NA unassigned           Utah             US  2020-04-12        NA
-##             Long_ Confirmed Deaths Recovered Active
-##     1:  -82.46171         1      0         0      0
-##     2:  -92.41420         2      0         0      0
-##     3:  -75.63235         1      0         0      0
-##     4: -116.24155        19      0         0      0
-##     5:  -94.47106         1      0         0      0
-##    ---                                             
-## 91571:  -12.88580         6      0         0      6
-## 91572:   48.51639         1      0         0      1
-## 91573:   27.84933        43      2        30     11
-## 91574:   29.15486        14      3         0     11
-## 91575:         NA         4      5         0     -1
-##                         Combined_Key Latitude Longitude
-##     1: Abbeville, South Carolina, US       NA        NA
-##     2:         Acadia, Louisiana, US       NA        NA
-##     3:        Accomack, Virginia, US       NA        NA
-##     4:                Ada, Idaho, US       NA        NA
-##     5:               Adair, Iowa, US       NA        NA
-##    ---                                                 
-## 91571:                Western Sahara       NA        NA
-## 91572:                         Yemen       NA        NA
-## 91573:                        Zambia       NA        NA
-## 91574:                      Zimbabwe       NA        NA
-## 91575:          unassigned, Utah, US       NA        NA</code></pre>
+<pre><code>##         Province_State     Country_Region Last_Update Confirmed Deaths
+##      1:          Anhui     Mainland China  2020-01-22         1      0
+##      2:        Beijing     Mainland China  2020-01-22        14      0
+##      3:      Chongqing     Mainland China  2020-01-22         6      0
+##      4:         Fujian     Mainland China  2020-01-22         1      0
+##      5:          Gansu     Mainland China  2020-01-22         0      0
+##     ---                                                               
+## 182261:                West Bank and Gaza  2020-05-14       375      2
+## 182262:                    Western Sahara  2020-05-14         6      0
+## 182263:                             Yemen  2020-05-14        70     12
+## 182264:                            Zambia  2020-05-14       446      7
+## 182265:                          Zimbabwe  2020-05-14        37      4
+##         Recovered Latitude Longitude FIPS Admin2       Lat     Long_
+##      1:         0       NA        NA   NA   &lt;NA&gt;        NA        NA
+##      2:         0       NA        NA   NA   &lt;NA&gt;        NA        NA
+##      3:         0       NA        NA   NA   &lt;NA&gt;        NA        NA
+##      4:         0       NA        NA   NA   &lt;NA&gt;        NA        NA
+##      5:         0       NA        NA   NA   &lt;NA&gt;        NA        NA
+##     ---                                                             
+## 182261:       310       NA        NA   NA         31.95220  35.23320
+## 182262:         6       NA        NA   NA         24.21550 -12.88580
+## 182263:         1       NA        NA   NA         15.55273  48.51639
+## 182264:       124       NA        NA   NA        -13.13390  27.84933
+## 182265:        12       NA        NA   NA        -19.01544  29.15486
+##         Active       Combined_Key
+##      1:     NA               &lt;NA&gt;
+##      2:     NA               &lt;NA&gt;
+##      3:     NA               &lt;NA&gt;
+##      4:     NA               &lt;NA&gt;
+##      5:     NA               &lt;NA&gt;
+##     ---                          
+## 182261:     63 West Bank and Gaza
+## 182262:      0     Western Sahara
+## 182263:     57              Yemen
+## 182264:    315             Zambia
+## 182265:     21           Zimbabwe</code></pre>
 </div>
 <div id="select-country" class="section level3">
 <h3>Select Country</h3>
@@ -318,6 +319,37 @@ country_cases.dt</code></pre>
 ## 49:  2020-04-10     30455  18849
 ## 50:  2020-04-11     32534  19468
 ## 51:  2020-04-12     34211  19899
+## 52:  2020-04-13     35435  20465
+## 53:  2020-04-14     37130  21067
+## 54:  2020-04-15     38092  21645
+## 55:  2020-04-16     40164  22170
+## 56:  2020-04-17     42727  22745
+## 57:  2020-04-18     44927  23227
+## 58:  2020-04-19     47055  23660
+## 59:  2020-04-20     48877  24114
+## 60:  2020-04-21     51600  24648
+## 61:  2020-04-22     54543  25085
+## 62:  2020-04-24     57576  25549
+## 63:  2020-04-25     60498  25969
+## 64:  2020-04-26     63120  26384
+## 65:  2020-04-27     64928  26644
+## 66:  2020-04-28     66624  26977
+## 67:  2020-04-29     68941  27359
+## 68:  2020-04-30     71252  27682
+## 69:  2020-05-01     75945  27967
+## 70:  2020-05-02     78249  28236
+## 71:  2020-05-03     79914  28710
+## 72:  2020-05-04     81654  28884
+## 73:  2020-05-05     82879  29079
+## 74:  2020-05-06     85231  29315
+## 75:  2020-05-07     93245  29684
+## 76:  2020-05-08     96276  29958
+## 77:  2020-05-09     99023  30201
+## 78:  2020-05-10    103031  30395
+## 79:  2020-05-11    105186  30560
+## 80:  2020-05-12    106587  30739
+## 81:  2020-05-13    109039  30911
+## 82:  2020-05-14    112541  31106
 ##     Last_Update Recovered Deaths</code></pre>
 <p>Here, we make separate data table for confirmed cases, since they are up to an
 order of magnitude higher than recovered/death reports. Visually it is easier to
@@ -341,7 +373,7 @@ cases each day since Jan. 22, 2020 for our country of interest.</p>
 ggplot(melted.dt, aes(x=Last_Update, y=Number.Reported)) +
     geom_point() + 
     geom_line()</code></pre>
-<p><img src="/post/data_download_sanitation_files/figure-html/plot-confirmed-1.png" width="672" /></p>
+<p><img src="/post/session1/data_download_sanitation_files/figure-html/plot-confirmed-1.png" width="672" /></p>
 <p>Here, we show the number of reported deaths and recoveries each day for our country
 of interest. Notice how different are the maximum values in the y-column s between
 this plot and the first one. This is why it was convenient to split them up this way,
@@ -351,7 +383,7 @@ otherwise these two plots would be very small and hard to read!</p>
 ggplot(melted.dt, aes(x=Last_Update, y=Number.Reported, color=Cases)) +
     geom_point() + 
     geom_line()</code></pre>
-<p><img src="/post/data_download_sanitation_files/figure-html/plot-cases-1.png" width="672" /></p>
+<p><img src="/post/session1/data_download_sanitation_files/figure-html/plot-cases-1.png" width="672" /></p>
 </div>
 </div>
 <div id="further-reading" class="section level1">
