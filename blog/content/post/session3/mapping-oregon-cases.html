@@ -22,8 +22,10 @@ illustrative documentation for her code, so I will simply attempt to augment wha
 <div id="subsetting-the-data" class="section level2">
 <h2>Subsetting the data</h2>
 <p>First of all, we need to set up the environment in which we will be conducting our computations and analysis. This
-includes importing the appropriate libraries and connecting to the database from where we will pull the COVID-19 data. Remember,
-if you want to run this code, <em>you must be connected to the VPN</em>.</p>
+includes importing the appropriate libraries and connecting to the database from where we will pull the COVID-19 data. I have
+moved the code that connects to the database to a separate file and wrapped it in a function call so that sensitive information
+such as the database username and password are protected. Contact me if you need help setting up your own database configuration
+script. Finally, recall that if you want to run this code, <em>you must be connected to the VPN</em>.</p>
 <pre class="r"><code>library(data.table)
 library(magrittr)
 library(dplyr)
