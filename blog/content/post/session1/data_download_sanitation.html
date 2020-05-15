@@ -24,8 +24,9 @@ us to download a webpage and extract all of the text from it in just a few simpl
 lines of code! A few commonly used libraries include <strong>data.table</strong>, <strong>dplyr</strong>, and
 <strong>magrittr</strong>, all of which we will go into later.</p>
 <pre class="r"><code>library(magrittr)
-library(xml2)
-library(lubridate)
+library(xml2)</code></pre>
+<pre><code>## Warning: package &#39;xml2&#39; was built under R version 3.6.3</code></pre>
+<pre class="r"><code>library(lubridate)
 library(data.table)
 library(dplyr)
 library(ggplot2)</code></pre>
@@ -131,42 +132,42 @@ data.dt[data.dt$Deaths%&gt;%is.na, &#39;Deaths&#39;] &lt;- 0
 data.dt[data.dt$Recovered%&gt;%is.na, &#39;Recovered&#39;] &lt;- 0
 
 data.dt</code></pre>
-<pre><code>##            Province_State Country_Region Last_Update Confirmed Deaths Recovered
-##      1:             Anhui Mainland China  2020-01-22         1      0         0
-##      2:           Beijing Mainland China  2020-01-22        14      0         0
-##      3:         Chongqing Mainland China  2020-01-22         6      0         0
-##      4:            Fujian Mainland China  2020-01-22         1      0         0
-##      5:             Gansu Mainland China  2020-01-22         0      0         0
-##     ---                                                                        
-## 127775:        Queensland      Australia  2020-04-27      1030      6       926
-## 127776:   South Australia      Australia  2020-04-27       438      4       411
-## 127777:          Tasmania      Australia  2020-04-27       212     11       123
-## 127778:          Victoria      Australia  2020-04-27      1349     17      1265
-## 127779: Western Australia      Australia  2020-04-27       549      8       486
-##         Latitude Longitude FIPS Admin2      Lat    Long_ Active
-##      1:       NA        NA   NA   &lt;NA&gt;       NA       NA     NA
-##      2:       NA        NA   NA   &lt;NA&gt;       NA       NA     NA
-##      3:       NA        NA   NA   &lt;NA&gt;       NA       NA     NA
-##      4:       NA        NA   NA   &lt;NA&gt;       NA       NA     NA
-##      5:       NA        NA   NA   &lt;NA&gt;       NA       NA     NA
-##     ---                                                        
-## 127775:       NA        NA   NA        -27.4698 153.0251     98
-## 127776:       NA        NA   NA        -34.9285 138.6007     23
-## 127777:       NA        NA   NA        -42.8821 147.3272     78
-## 127778:       NA        NA   NA        -37.8136 144.9631     67
-## 127779:       NA        NA   NA        -31.9505 115.8605     55
-##                         Combined_Key
-##      1:                         &lt;NA&gt;
-##      2:                         &lt;NA&gt;
-##      3:                         &lt;NA&gt;
-##      4:                         &lt;NA&gt;
-##      5:                         &lt;NA&gt;
-##     ---                             
-## 127775:        Queensland, Australia
-## 127776:   South Australia, Australia
-## 127777:          Tasmania, Australia
-## 127778:          Victoria, Australia
-## 127779: Western Australia, Australia</code></pre>
+<pre><code>##         Province_State     Country_Region Last_Update Confirmed Deaths
+##      1:          Anhui     Mainland China  2020-01-22         1      0
+##      2:        Beijing     Mainland China  2020-01-22        14      0
+##      3:      Chongqing     Mainland China  2020-01-22         6      0
+##      4:         Fujian     Mainland China  2020-01-22         1      0
+##      5:          Gansu     Mainland China  2020-01-22         0      0
+##     ---                                                               
+## 182261:                West Bank and Gaza  2020-05-14       375      2
+## 182262:                    Western Sahara  2020-05-14         6      0
+## 182263:                             Yemen  2020-05-14        70     12
+## 182264:                            Zambia  2020-05-14       446      7
+## 182265:                          Zimbabwe  2020-05-14        37      4
+##         Recovered Latitude Longitude FIPS Admin2       Lat     Long_
+##      1:         0       NA        NA   NA   &lt;NA&gt;        NA        NA
+##      2:         0       NA        NA   NA   &lt;NA&gt;        NA        NA
+##      3:         0       NA        NA   NA   &lt;NA&gt;        NA        NA
+##      4:         0       NA        NA   NA   &lt;NA&gt;        NA        NA
+##      5:         0       NA        NA   NA   &lt;NA&gt;        NA        NA
+##     ---                                                             
+## 182261:       310       NA        NA   NA         31.95220  35.23320
+## 182262:         6       NA        NA   NA         24.21550 -12.88580
+## 182263:         1       NA        NA   NA         15.55273  48.51639
+## 182264:       124       NA        NA   NA        -13.13390  27.84933
+## 182265:        12       NA        NA   NA        -19.01544  29.15486
+##         Active       Combined_Key
+##      1:     NA               &lt;NA&gt;
+##      2:     NA               &lt;NA&gt;
+##      3:     NA               &lt;NA&gt;
+##      4:     NA               &lt;NA&gt;
+##      5:     NA               &lt;NA&gt;
+##     ---                          
+## 182261:     63 West Bank and Gaza
+## 182262:      0     Western Sahara
+## 182263:     57              Yemen
+## 182264:    315             Zambia
+## 182265:     21           Zimbabwe</code></pre>
 </div>
 <div id="select-country" class="section level3">
 <h3>Select Country</h3>
@@ -262,6 +263,23 @@ country_cases.dt</code></pre>
 ## 63:  2020-04-25     60498  25969
 ## 64:  2020-04-26     63120  26384
 ## 65:  2020-04-27     64928  26644
+## 66:  2020-04-28     66624  26977
+## 67:  2020-04-29     68941  27359
+## 68:  2020-04-30     71252  27682
+## 69:  2020-05-01     75945  27967
+## 70:  2020-05-02     78249  28236
+## 71:  2020-05-03     79914  28710
+## 72:  2020-05-04     81654  28884
+## 73:  2020-05-05     82879  29079
+## 74:  2020-05-06     85231  29315
+## 75:  2020-05-07     93245  29684
+## 76:  2020-05-08     96276  29958
+## 77:  2020-05-09     99023  30201
+## 78:  2020-05-10    103031  30395
+## 79:  2020-05-11    105186  30560
+## 80:  2020-05-12    106587  30739
+## 81:  2020-05-13    109039  30911
+## 82:  2020-05-14    112541  31106
 ##     Last_Update Recovered Deaths</code></pre>
 <p>Here, we make separate data table for confirmed cases, since they are up to an
 order of magnitude higher than recovered/death reports. Visually it is easier to

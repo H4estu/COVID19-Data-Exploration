@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.70.0" />
+
+
+<title>Mapping COVID-19 Cases in Oregon - Bio-Team Development</title>
+<meta property="og:title" content="Mapping COVID-19 Cases in Oregon - Bio-Team Development">
+
+
+  <link href='/QSI_NV5_logo.png' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/QSI_NV5_logo.png"
+         width="315"
+         height="128"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/H4estu/COVID19-Data-Exploration">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/QuantumSpatial">Twitter</a></li>
+    
+    <li><a href="https://quantumspatial.com">Website</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">1 min read</span>
+    
+
+    <h1 class="article-title">Mapping COVID-19 Cases in Oregon</h1>
+
+    
+    <span class="article-date">2020-04-27</span>
+    
+
+    <div class="article-content">
+      
+
+
+<div id="session-overview" class="section level2">
+<h2>Session Overview</h2>
+<p>This week, Kelsey spent some time mapping the COVID-19 cases in Oregon and generated some plots for us. She already has provided some most
+illustrative documentation for her code, so I will simply attempt to augment what she has already done.</p>
+<p>In this post, we will be covering the following subjects:</p>
+<ul>
+<li>Subsetting the full dataset to obtain only the Oregon cases</li>
+<li>Dividing the Oregon data into 10-day intervals for analysis</li>
+<li>Generating a 2-dimensional density plot (heatmap) of the confirmed cases in Oregon</li>
+</ul>
+<p>As always, if you’d like to download the code and run it yourself, <a href="https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session3/covid_heat_map.R"><strong>check it out on github</strong></a>.</p>
+</div>
+<div id="subsetting-the-data" class="section level2">
+<h2>Subsetting the data</h2>
+<p>First of all, we need to set up the environment in which we will be conducting our computations and analysis. This
+includes importing the appropriate libraries and connecting to the database from where we will pull the COVID-19 data. Remember,
+if you want to run this code, <em>you must be connected to the VPN</em>.</p>
+<pre class="r"><code>library(data.table)
+library(magrittr)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(RPostgreSQL)
+library(maps)
+library(RColorBrewer)
+library(gridExtra)
+
+
+git.path &lt;- Sys.getenv(&#39;HOME&#39;)  # Where the base COVID19-Data-Exploration folder lives.
+
+# -------- Access the COVID-19 Database --------- #
+source(file.path(git.path,&#39;Code/config_files/db_config.R&#39;))
+con &lt;- db_connect.fn()
+full.dt&lt;-dbGetQuery(con,&#39;SELECT * FROM covid_data.report_data&#39;) %&gt;% data.table
+dbDisconnect(con)  
+# ----------------------------------------------- #</code></pre>
+</div>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+
+    
+  </body>
+</html>
+
