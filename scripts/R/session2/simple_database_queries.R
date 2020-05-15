@@ -5,7 +5,7 @@ library(magrittr)
 
 
 # -------- Access the COVID-19 Database --------- #
-source(file.path(git.path,'Code/COVID19-Data-Exploration/scripts/R/db_config.R'))
+source(file.path(git.path,'Code/config_files/db_config.R'))
 con <- db_connect.fn()
 # ----------------------------------------------- #
 
