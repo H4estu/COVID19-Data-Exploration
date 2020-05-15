@@ -64,7 +64,7 @@
 
   <article class="article">
     
-    <span class="article-duration">2 min read</span>
+    <span class="article-duration">12 min read</span>
     
 
     <h1 class="article-title">Mapping COVID-19 Cases in Oregon</h1>
@@ -79,23 +79,29 @@
 
 <div id="session-overview" class="section level2">
 <h2>Session Overview</h2>
-<p>This week, Kelsey spent some time mapping the COVID-19 cases in Oregon and generated some plots for us. She already has provided some most
-illustrative documentation for her code, so I will simply attempt to augment what she has already done.</p>
+<p>This week, Kelsey spent some time mapping the COVID-19 cases in Oregon and generated some plots for
+us. She already has provided some most illustrative documentation for her code, so I will simply
+attempt to augment what she has already done.</p>
 <p>In this post, we will be covering the following subjects:</p>
 <ul>
 <li>Subsetting the full dataset to obtain only the Oregon cases</li>
 <li>Dividing the Oregon data into 10-day intervals for analysis</li>
 <li>Generating a 2-dimensional density plot (heatmap) of the confirmed cases in Oregon</li>
 </ul>
-<p>As always, if you’d like to download the code and run it yourself, <a href="https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session3/covid_heat_map.R"><strong>check it out on github</strong></a>.</p>
+<p>As always, if you’d like to download the code and run it yourself, <a href="https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session3/covid_heat_map.R"><strong>check it out on github</strong></a>.
+I have edited out a few things in this post for clarity, so again, check out the link above to see
+the script in its full glory.
+***</p>
 </div>
-<div id="subsetting-the-data" class="section level2">
-<h2>Subsetting the data</h2>
-<p>First of all, we need to set up the environment in which we will be conducting our computations and analysis. This
-includes importing the appropriate libraries and connecting to the database from where we will pull the COVID-19 data. I have
-moved the code that connects to the database to a separate file and wrapped it in a function call so that sensitive information
-such as the database username and password are protected. Contact me if you need help setting up your own database configuration
-script. Finally, recall that if you want to run this code, <em>you must be connected to the VPN</em>.</p>
+<div id="setting-up-the-environment" class="section level2">
+<h2>Setting Up the Environment</h2>
+<p>First of all, we need to set up the environment in which we will be conducting our computations and
+analysis. This includes importing the appropriate libraries and connecting to the database to pull
+in the COVID-19 data. I have moved the code that connects to the database to a separate file and
+wrapped it in a function call so that sensitive information such as the database username and
+password are protected. Contact me if you need help setting up your own database configuration
+script. Finally, recall that if you want to run this code, <em>you must be connected to the VPN</em>, as
+the database lives on Kyle’s work machine and is only accessible via the office network.</p>
 <pre class="r"><code>library(data.table)
 library(magrittr)
 library(dplyr)
@@ -115,6 +121,283 @@ con &lt;- db_connect.fn()
 full.dt&lt;-dbGetQuery(con,&#39;SELECT * FROM covid_data.report_data&#39;) %&gt;% data.table
 dbDisconnect(con)  
 # ----------------------------------------------- #</code></pre>
+<hr />
+</div>
+<div id="subsetting-the-data" class="section level2">
+<h2>Subsetting the data</h2>
+<p>To orient ourselves to the data, let’s first look at the number of cases in Oregon. Here we
+are just looking at data since 01 March, because the data seem more consistently documented
+since that date.</p>
+<pre class="r"><code>### Summary of Oregon cases using the same method that Zach presented in the first class ###
+oregon_cases.dt &lt;- full.dt[which((grepl(&#39;, OR&#39;, full.dt$province_state) | 
+                                    full.dt$province_state ==&#39;Oregon&#39;
+                                  ) &amp; !is.na(full.dt$latitude)
+                                 ), ] %&gt;%
+  group_by(last_update) %&gt;%
+  summarize(Recovered=max(recovered), 
+            Deaths=max(deaths), 
+            Confirmed=max(confirmed), 
+            Active=max(active)
+  ) %&gt;% data.table
+
+melted.dt &lt;- melt(oregon_cases.dt, id.vars=&#39;last_update&#39;, variable.name = &#39;Cases&#39;, 
+                  value.name=&#39;Number.Reported&#39;)
+ggplot(melted.dt, aes(x=last_update, y=Number.Reported, color=Cases)) +
+  geom_point() + 
+  geom_line()</code></pre>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/first-look-1.png" width="672" /></p>
+<p>What are some interesting trends that you see? Personally I find it interesting that no one appears
+to be reporting <strong>recovered</strong> cases (pink line). Perhaps they are trying to capture that metric by
+reporting the number of <strong>active</strong> cases (purple line)?</p>
+<p>Now we are</p>
+<pre class="r"><code>### Subset data down to only Oregon data ###
+# Look at unique values for Oregon province_state, we had a change in reporting so we are going to 
+# only use the data from the update onwards.
+print(full.dt[which((grepl(&#39;, OR&#39;, full.dt$province_state) | full.dt$province_state ==&#39;Oregon&#39;) &amp; 
+                      !is.na(full.dt$latitude)
+                    ), ]$province_state %&gt;% unique
+      )</code></pre>
+<pre><code>## [1] &quot;Portland, OR&quot;          &quot;Umatilla, OR&quot;          &quot;Washington County, OR&quot;
+## [4] &quot;Jackson County, OR &quot;   &quot;Klamath County, OR&quot;    &quot;Douglas County, OR&quot;   
+## [7] &quot;Marion County, OR&quot;     &quot;Oregon&quot;</code></pre>
+<pre class="r"><code>covid.OR&lt;-full.dt[which(full.dt$province_state ==&#39;Oregon&#39; &amp;  !is.na(full.dt$latitude) &amp; 
+                          !is.na(full.dt$admin2)
+                        ), ]
+
+# Look at the data split by date to determine how to work with it #
+covid.OR %&gt;% split(.,.$last_update) %&gt;% .[c(1,2)]</code></pre>
+<pre><code>## $`2020-03-22`
+##        id province_state country_region last_update confirmed deaths recovered
+##  1:  8633         Oregon             US  2020-03-22        55      1         0
+##  2:  8634         Oregon             US  2020-03-22        22      1         0
+##  3:  8635         Oregon             US  2020-03-22        19      1         0
+##  4:  8636         Oregon             US  2020-03-22        19      1         0
+##  5:  8637         Oregon             US  2020-03-22        12      0         0
+##  6:  8638         Oregon             US  2020-03-22        10      0         0
+##  7:  8639         Oregon             US  2020-03-22         6      0         0
+##  8:  8640         Oregon             US  2020-03-22         4      0         0
+##  9:  8641         Oregon             US  2020-03-22         4      1         0
+## 10:  8642         Oregon             US  2020-03-22         2      0         0
+## 11:  8643         Oregon             US  2020-03-22         2      0         0
+## 12:  8644         Oregon             US  2020-03-22         1      0         0
+## 13:  8645         Oregon             US  2020-03-22         1      0         0
+## 14:  8646         Oregon             US  2020-03-22         1      0         0
+## 15:  8647         Oregon             US  2020-03-22         1      0         0
+## 16:  8648         Oregon             US  2020-03-22         1      0         0
+## 17:  8649         Oregon             US  2020-03-22         1      0         0
+## 18: 10298         Oregon             US  2020-03-22         0      0         0
+## 19: 10299         Oregon             US  2020-03-22         0      0         0
+## 20: 10300         Oregon             US  2020-03-22         0      0         0
+## 21: 10301         Oregon             US  2020-03-22         0      0         0
+## 22: 10302         Oregon             US  2020-03-22         0      0         0
+## 23: 10303         Oregon             US  2020-03-22         0      0         0
+## 24: 10304         Oregon             US  2020-03-22         0      0         0
+## 25: 10305         Oregon             US  2020-03-22         0      0         0
+## 26: 10306         Oregon             US  2020-03-22         0      0         0
+## 27: 10307         Oregon             US  2020-03-22         0      0         0
+## 28: 10308         Oregon             US  2020-03-22         0      0         0
+## 29: 10309         Oregon             US  2020-03-22         0      0         0
+## 30: 10310         Oregon             US  2020-03-22         0      0         0
+## 31: 10311         Oregon             US  2020-03-22         0      0         0
+## 32: 10312         Oregon             US  2020-03-22         0      0         0
+## 33: 10313         Oregon             US  2020-03-22         0      0         0
+## 34: 10314         Oregon             US  2020-03-22         0      0         0
+## 35: 10315         Oregon             US  2020-03-22         0      0         0
+## 36: 10316         Oregon             US  2020-03-22         0      0         0
+##        id province_state country_region last_update confirmed deaths recovered
+##     latitude longitude  fips     admin2 active           combined_key
+##  1: 45.55973 -123.0955 41067 Washington      0 Washington, Oregon, US
+##  2: 44.90288 -122.5815 41047     Marion      0     Marion, Oregon, US
+##  3: 45.54748 -122.4169 41051  Multnomah      0  Multnomah, Oregon, US
+##  4: 44.48899 -122.5373 41043       Linn      0       Linn, Oregon, US
+##  5: 45.18787 -122.2180 41005  Clackamas      0  Clackamas, Oregon, US
+##  6: 43.91570 -121.2289 41017  Deschutes      0  Deschutes, Oregon, US
+##  7: 45.23330 -123.3087 41071    Yamhill      0    Yamhill, Oregon, US
+##  8: 44.49167 -123.4317 41003     Benton      0     Benton, Oregon, US
+##  9: 43.93727 -122.8478 41039       Lane      0       Lane, Oregon, US
+## 10: 42.43201 -122.7289 41029    Jackson      0    Jackson, Oregon, US
+## 11: 45.59073 -118.7354 41059   Umatilla      0   Umatilla, Oregon, US
+## 12: 42.68763 -121.6496 41035    Klamath      0    Klamath, Oregon, US
+## 13: 43.27941 -123.1673 41019    Douglas      0    Douglas, Oregon, US
+## 14: 44.90323 -123.4129 41053       Polk      0       Polk, Oregon, US
+## 15: 44.49025 -119.0069 41023      Grant      0      Grant, Oregon, US
+## 16: 45.30915 -118.0069 41061      Union      0      Union, Oregon, US
+## 17: 42.36655 -123.5562 41033  Josephine      0  Josephine, Oregon, US
+## 18: 44.70916 -117.6750 41001      Baker      0      Baker, Oregon, US
+## 19: 45.99713 -123.6607 41007    Clatsop      0    Clatsop, Oregon, US
+## 20: 45.94464 -123.0891 41009   Columbia      0   Columbia, Oregon, US
+## 21: 43.17407 -124.0595 41011       Coos      0       Coos, Oregon, US
+## 22: 44.14230 -120.3563 41013      Crook      0      Crook, Oregon, US
+## 23: 42.45911 -124.1573 41015      Curry      0      Curry, Oregon, US
+## 24: 45.37160 -120.2049 41021    Gilliam      0    Gilliam, Oregon, US
+## 25: 43.06423 -118.9666 41025     Harney      0     Harney, Oregon, US
+## 26: 45.51873 -121.6552 41027 Hood River      0 Hood River, Oregon, US
+## 27: 44.62807 -121.1783 41031  Jefferson      0  Jefferson, Oregon, US
+## 28: 42.79247 -120.3850 41037       Lake      0       Lake, Oregon, US
+## 29: 44.64253 -123.8699 41041    Lincoln      0    Lincoln, Oregon, US
+## 30: 43.19370 -117.6227 41045    Malheur      0    Malheur, Oregon, US
+## 31: 45.41847 -119.5845 41049     Morrow      0     Morrow, Oregon, US
+## 32: 45.41502 -120.6828 41055    Sherman      0    Sherman, Oregon, US
+## 33: 45.46249 -123.7121 41057  Tillamook      0  Tillamook, Oregon, US
+## 34: 45.57894 -117.1835 41063    Wallowa      0    Wallowa, Oregon, US
+## 35: 45.16293 -121.1671 41065      Wasco      0      Wasco, Oregon, US
+## 36: 44.72698 -120.0281 41069    Wheeler      0    Wheeler, Oregon, US
+##     latitude longitude  fips     admin2 active           combined_key
+## 
+## $`2020-03-23`
+##        id province_state country_region last_update confirmed deaths recovered
+##  1: 11267         Oregon             US  2020-03-23         0      0         0
+##  2: 11335         Oregon             US  2020-03-23         4      0         0
+##  3: 11661         Oregon             US  2020-03-23        14      0         0
+##  4: 11686         Oregon             US  2020-03-23         0      0         0
+##  5: 11758         Oregon             US  2020-03-23         0      0         0
+##  6: 11782         Oregon             US  2020-03-23         0      0         0
+##  7: 11822         Oregon             US  2020-03-23         0      0         0
+##  8: 11842         Oregon             US  2020-03-23         0      0         0
+##  9: 11920         Oregon             US  2020-03-23        10      0         0
+## 10: 11963         Oregon             US  2020-03-23         1      0         0
+## 11: 12192         Oregon             US  2020-03-23         0      0         0
+## 12: 12240         Oregon             US  2020-03-23         1      0         0
+## 13: 12357         Oregon             US  2020-03-23         0      0         0
+## 14: 12438         Oregon             US  2020-03-23         1      0         0
+## 15: 12531         Oregon             US  2020-03-23         2      0         0
+## 16: 12568         Oregon             US  2020-03-23         0      0         0
+## 17: 12607         Oregon             US  2020-03-23         1      0         0
+## 18: 12672         Oregon             US  2020-03-23         1      0         0
+## 19: 12720         Oregon             US  2020-03-23         0      0         0
+## 20: 12738         Oregon             US  2020-03-23         4      1         0
+## 21: 12830         Oregon             US  2020-03-23         0      0         0
+## 22: 12840         Oregon             US  2020-03-23        20      1         0
+## 23: 12929         Oregon             US  2020-03-23         0      0         0
+## 24: 12953         Oregon             US  2020-03-23        30      1         0
+## 25: 13171         Oregon             US  2020-03-23         0      0         0
+## 26: 13179         Oregon             US  2020-03-23        21      1         0
+## 27: 13458         Oregon             US  2020-03-23         3      0         0
+## 28: 13759         Oregon             US  2020-03-23         0      0         0
+## 29: 13948         Oregon             US  2020-03-23         0      0         0
+## 30: 14004         Oregon             US  2020-03-23         2      0         0
+## 31: 14041         Oregon             US  2020-03-23         1      0         0
+## 32: 14097         Oregon             US  2020-03-23         0      0         0
+## 33: 14124         Oregon             US  2020-03-23         0      0         0
+## 34: 14150         Oregon             US  2020-03-23        69      1         0
+## 35: 14212         Oregon             US  2020-03-23         0      0         0
+## 36: 14297         Oregon             US  2020-03-23         6      0         0
+##        id province_state country_region last_update confirmed deaths recovered
+##     latitude longitude  fips     admin2 active           combined_key
+##  1: 44.70916 -117.6750 41001      Baker      0      Baker, Oregon, US
+##  2: 44.49167 -123.4317 41003     Benton      0     Benton, Oregon, US
+##  3: 45.18787 -122.2180 41005  Clackamas      0  Clackamas, Oregon, US
+##  4: 45.99713 -123.6607 41007    Clatsop      0    Clatsop, Oregon, US
+##  5: 45.94464 -123.0891 41009   Columbia      0   Columbia, Oregon, US
+##  6: 43.17407 -124.0595 41011       Coos      0       Coos, Oregon, US
+##  7: 44.14230 -120.3563 41013      Crook      0      Crook, Oregon, US
+##  8: 42.45911 -124.1573 41015      Curry      0      Curry, Oregon, US
+##  9: 43.91570 -121.2289 41017  Deschutes      0  Deschutes, Oregon, US
+## 10: 43.27941 -123.1673 41019    Douglas      0    Douglas, Oregon, US
+## 11: 45.37160 -120.2049 41021    Gilliam      0    Gilliam, Oregon, US
+## 12: 44.49025 -119.0069 41023      Grant      0      Grant, Oregon, US
+## 13: 43.06423 -118.9666 41025     Harney      0     Harney, Oregon, US
+## 14: 45.51873 -121.6552 41027 Hood River      0 Hood River, Oregon, US
+## 15: 42.43201 -122.7289 41029    Jackson      0    Jackson, Oregon, US
+## 16: 44.62807 -121.1783 41031  Jefferson      0  Jefferson, Oregon, US
+## 17: 42.36655 -123.5562 41033  Josephine      0  Josephine, Oregon, US
+## 18: 42.68763 -121.6496 41035    Klamath      0    Klamath, Oregon, US
+## 19: 42.79247 -120.3850 41037       Lake      0       Lake, Oregon, US
+## 20: 43.93727 -122.8478 41039       Lane      0       Lane, Oregon, US
+## 21: 44.64253 -123.8699 41041    Lincoln      0    Lincoln, Oregon, US
+## 22: 44.48899 -122.5373 41043       Linn      0       Linn, Oregon, US
+## 23: 43.19370 -117.6227 41045    Malheur      0    Malheur, Oregon, US
+## 24: 44.90288 -122.5815 41047     Marion      0     Marion, Oregon, US
+## 25: 45.41847 -119.5845 41049     Morrow      0     Morrow, Oregon, US
+## 26: 45.54748 -122.4169 41051  Multnomah      0  Multnomah, Oregon, US
+## 27: 44.90323 -123.4129 41053       Polk      0       Polk, Oregon, US
+## 28: 45.41502 -120.6828 41055    Sherman      0    Sherman, Oregon, US
+## 29: 45.46249 -123.7121 41057  Tillamook      0  Tillamook, Oregon, US
+## 30: 45.59073 -118.7354 41059   Umatilla      0   Umatilla, Oregon, US
+## 31: 45.30915 -118.0069 41061      Union      0      Union, Oregon, US
+## 32: 45.57894 -117.1835 41063    Wallowa      0    Wallowa, Oregon, US
+## 33: 45.16293 -121.1671 41065      Wasco      0      Wasco, Oregon, US
+## 34: 45.55973 -123.0955 41067 Washington      0 Washington, Oregon, US
+## 35: 44.72698 -120.0281 41069    Wheeler      0    Wheeler, Oregon, US
+## 36: 45.23330 -123.3087 41071    Yamhill      0    Yamhill, Oregon, US
+##     latitude longitude  fips     admin2 active           combined_key</code></pre>
+<pre class="r"><code># Add new fields and make the date pretty for plotting
+covid.OR$month&lt;-covid.OR$last_update %&gt;% format(., &quot;%B&quot;)
+
+# Separate each month into &#39;periods&#39; for analysis over time. (I don&#39;t know why I didn&#39;t do weeks lol)
+covid.OR$period&lt;-&quot;NA&quot;
+covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% paste0(&#39;0&#39;,1:9),]$period&lt;-paste0(covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% paste0(&#39;0&#39;,1:9),]$month,&#39; 1-9&#39;)
+covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% 10:19,]$period&lt;-paste0(covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% 10:19,]$month,&#39; 10-19&#39;)
+covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% 20:31,]$period&lt;-paste0(covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% 20:31,]$month,&#39; 20-31&#39;)
+
+# Create factor levels for ggplot facet wrap
+covid.OR$period&lt;-covid.OR$period %&gt;% factor(levels = unique(.))
+
+# Look at only deaths firsts, so subset out only that data
+subset&lt;-covid.OR[,c(&#39;deaths&#39;,&#39;latitude&#39;, &#39;longitude&#39;, &#39;period&#39;)]
+
+# The function we will be using to create our heat map requires that each value be a unique &#39;event&#39; with its own coordinate location
+# rather than being able to weight the points by a particular value, because of this we must replicate our rows and their lat/long
+# data by the number of the parameter of interest.
+subset.expanded &lt;- subset[rep(1:nrow(subset), subset$deaths)]
+# Check out the results
+tail(subset.expanded, 20)</code></pre>
+<pre><code>##     deaths latitude longitude      period
+##  1:     37 45.54748 -122.4169 April 20-31
+##  2:      1 44.90323 -123.4129 April 20-31
+##  3:      2 45.16293 -121.1671 April 20-31
+##  4:      2 45.16293 -121.1671 April 20-31
+##  5:     10 45.55973 -123.0955 April 20-31
+##  6:     10 45.55973 -123.0955 April 20-31
+##  7:     10 45.55973 -123.0955 April 20-31
+##  8:     10 45.55973 -123.0955 April 20-31
+##  9:     10 45.55973 -123.0955 April 20-31
+## 10:     10 45.55973 -123.0955 April 20-31
+## 11:     10 45.55973 -123.0955 April 20-31
+## 12:     10 45.55973 -123.0955 April 20-31
+## 13:     10 45.55973 -123.0955 April 20-31
+## 14:     10 45.55973 -123.0955 April 20-31
+## 15:      6 45.23330 -123.3087 April 20-31
+## 16:      6 45.23330 -123.3087 April 20-31
+## 17:      6 45.23330 -123.3087 April 20-31
+## 18:      6 45.23330 -123.3087 April 20-31
+## 19:      6 45.23330 -123.3087 April 20-31
+## 20:      6 45.23330 -123.3087 April 20-31</code></pre>
+<pre class="r"><code># Next we are going to summarize our data for the point based heat map that we are going to do.
+subset.summary&lt;- subset[,.(deaths=max(deaths)), by=c(&#39;period&#39;,&#39;latitude&#39;, &#39;longitude&#39;)]
+print(subset.summary)</code></pre>
+<pre><code>##           period latitude longitude deaths
+##   1: March 20-31 45.55973 -123.0955      3
+##   2: March 20-31 44.90288 -122.5815      3
+##   3: March 20-31 45.54748 -122.4169      2
+##   4: March 20-31 44.48899 -122.5373      2
+##   5: March 20-31 45.18787 -122.2180      3
+##  ---                                      
+## 123: April 20-31 45.30915 -118.0069      0
+## 124: April 20-31 45.57894 -117.1835      0
+## 125: April 20-31 45.16293 -121.1671      2
+## 126: April 20-31 45.55973 -123.0955     10
+## 127: April 20-31 45.23330 -123.3087      6</code></pre>
+<pre class="r"><code># Generate a map of Oregon to plot the COVID data on using &#39;maps&#39; package
+all_states&lt;-map_data(&#39;state&#39;)
+head(all_states)</code></pre>
+<pre><code>##        long      lat group order  region subregion
+## 1 -87.46201 30.38968     1     1 alabama      &lt;NA&gt;
+## 2 -87.48493 30.37249     1     2 alabama      &lt;NA&gt;
+## 3 -87.52503 30.37249     1     3 alabama      &lt;NA&gt;
+## 4 -87.53076 30.33239     1     4 alabama      &lt;NA&gt;
+## 5 -87.57087 30.32665     1     5 alabama      &lt;NA&gt;
+## 6 -87.58806 30.32665     1     6 alabama      &lt;NA&gt;</code></pre>
+<pre class="r"><code>Oregon&lt;-all_states[all_states$region==&#39;oregon&#39;,]
+p &lt;- ggplot() +
+  geom_polygon(data=Oregon, aes(x=long, y=lat))
+print(p)</code></pre>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/subset-data-1.png" width="672" /></p>
+<pre class="r"><code>## Plot a heat map layer: Polygons with fill colors based on
+## relative frequency of events
+COVID.map &lt;- p + stat_density2d(data=subset.expanded, aes(x=longitude, y=latitude, fill=..level.., alpha=..level..), geom=&quot;polygon&quot;)
+print(COVID.map)</code></pre>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/subset-data-2.png" width="672" /></p>
 </div>
 
     </div>
@@ -152,6 +435,9 @@ dbDisconnect(con)
 
 
     
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
 
     
   </body>

@@ -132,6 +132,8 @@ If the above image does not render for you, you can view the [image here](https:
 There are other important features of databases such as relations, keys, and schemas
 that we won't go into detail here.  However there are plenty of resources online if you
 are interested in learning more!
+***
+
 
 ## Further reading
 See the following links for more information on the following topics:

@@ -226,7 +226,7 @@ ggplot(melted.dt, aes(x=Last_Update, y=Number.Reported, color=Cases)) +
     geom_point() + 
     geom_line()
 ```
-
+***
     
 
 # Further reading
