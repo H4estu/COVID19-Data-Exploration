@@ -7,12 +7,15 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
 ```
 
 ## Session Overview
 
-This week, Kelsey spent some time mapping the COVID-19 cases in Oregon and generated some plots for us.  She already has provided some most 
-illustrative documentation for her code, so I will simply attempt to augment what she has already done.
+This week, Kelsey spent some time mapping the COVID-19 cases in Oregon and generated some plots for 
+us.  She already has provided some most illustrative documentation for her code, so I will simply 
+attempt to augment what she has already done.
 
 In this post, we will be covering the following subjects:
 
@@ -22,17 +25,20 @@ In this post, we will be covering the following subjects:
 
 
 As always, if you'd like to download the code and run it yourself, [**check it out on github**](https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session3/covid_heat_map.R).
+I have edited out a few things in this post for clarity, so again, check out the link above to see
+the script in its full glory.
+***
 
+## Setting Up the Environment
 
-
-## Subsetting the data
-
-First of all, we need to set up the environment in which we will be conducting our computations and analysis.  This
-includes importing the appropriate libraries and connecting to the database from where we will pull the COVID-19 data.  I have
-moved the code that connects to the database to a separate file and wrapped it in a function call so that sensitive information
-such as the database username and password are protected.  Contact me if you need help setting up your own database configuration
-script.  Finally, recall that if you want to run this code, *you must be connected to the VPN*.
-```{r initialize, eval=FALSE}
+First of all, we need to set up the environment in which we will be conducting our computations and 
+analysis.  This includes importing the appropriate libraries and connecting to the database to pull 
+in the COVID-19 data.  I have moved the code that connects to the database to a separate file and 
+wrapped it in a function call so that sensitive information such as the database username and 
+password are protected.  Contact me if you need help setting up your own database configuration
+script.  Finally, recall that if you want to run this code, *you must be connected to the VPN*, as 
+the database lives on Kyle's work machine and is only accessible via the office network.
+```{r initialize, results='hide'}
 library(data.table)
 library(magrittr)
 library(dplyr)
@@ -54,6 +60,90 @@ dbDisconnect(con)
 # ----------------------------------------------- #
 
 ```
+***
 
-```{r subsetting}
+## Subsetting the data
+To orient ourselves to the data, let's first look at the number of cases in Oregon.  Here we
+are just looking at data since 01 March, because the data seem more consistently documented 
+since that date.
+
+```{r first-look}
+### Summary of Oregon cases using the same method that Zach presented in the first class ###
+oregon_cases.dt <- full.dt[which((grepl(', OR', full.dt$province_state) | 
+                                    full.dt$province_state =='Oregon'
+                                  ) & !is.na(full.dt$latitude)
+                                 ), ] %>%
+  group_by(last_update) %>%
+  summarize(Recovered=max(recovered), 
+            Deaths=max(deaths), 
+            Confirmed=max(confirmed), 
+            Active=max(active)
+  ) %>% data.table
+
+melted.dt <- melt(oregon_cases.dt, id.vars='last_update', variable.name = 'Cases', 
+                  value.name='Number.Reported')
+ggplot(melted.dt, aes(x=last_update, y=Number.Reported, color=Cases)) +
+  geom_point() + 
+  geom_line()
+```
+
+What are some interesting trends that you see?  Personally I find it interesting that no one appears
+to be reporting **recovered** cases (pink line).  Perhaps they are trying to capture that metric by 
+reporting the number of **active** cases (purple line)?  
+
+Now we are 
+```{r subset-data}
+### Subset data down to only Oregon data ###
+# Look at unique values for Oregon province_state, we had a change in reporting so we are going to 
+# only use the data from the update onwards.
+print(full.dt[which((grepl(', OR', full.dt$province_state) | full.dt$province_state =='Oregon') & 
+                      !is.na(full.dt$latitude)
+                    ), ]$province_state %>% unique
+      )
+covid.OR<-full.dt[which(full.dt$province_state =='Oregon' &  !is.na(full.dt$latitude) & 
+                          !is.na(full.dt$admin2)
+                        ), ]
+
+# Look at the data split by date to determine how to work with it #
+covid.OR %>% split(.,.$last_update) %>% .[c(1,2)]
+
+# Add new fields and make the date pretty for plotting
+covid.OR$month<-covid.OR$last_update %>% format(., "%B")
+
+# Separate each month into 'periods' for analysis over time. (I don't know why I didn't do weeks lol)
+covid.OR$period<-"NA"
+covid.OR[covid.OR$last_update %>% format(., "%d") %in% paste0('0',1:9),]$period<-paste0(covid.OR[covid.OR$last_update %>% format(., "%d") %in% paste0('0',1:9),]$month,' 1-9')
+covid.OR[covid.OR$last_update %>% format(., "%d") %in% 10:19,]$period<-paste0(covid.OR[covid.OR$last_update %>% format(., "%d") %in% 10:19,]$month,' 10-19')
+covid.OR[covid.OR$last_update %>% format(., "%d") %in% 20:31,]$period<-paste0(covid.OR[covid.OR$last_update %>% format(., "%d") %in% 20:31,]$month,' 20-31')
+
+# Create factor levels for ggplot facet wrap
+covid.OR$period<-covid.OR$period %>% factor(levels = unique(.))
+
+# Look at only deaths firsts, so subset out only that data
+subset<-covid.OR[,c('deaths','latitude', 'longitude', 'period')]
+
+# The function we will be using to create our heat map requires that each value be a unique 'event' with its own coordinate location
+# rather than being able to weight the points by a particular value, because of this we must replicate our rows and their lat/long
+# data by the number of the parameter of interest.
+subset.expanded <- subset[rep(1:nrow(subset), subset$deaths)]
+# Check out the results
+tail(subset.expanded, 20)
+
+# Next we are going to summarize our data for the point based heat map that we are going to do.
+subset.summary<- subset[,.(deaths=max(deaths)), by=c('period','latitude', 'longitude')]
+print(subset.summary)
+
+# Generate a map of Oregon to plot the COVID data on using 'maps' package
+all_states<-map_data('state')
+head(all_states)
+
+Oregon<-all_states[all_states$region=='oregon',]
+p <- ggplot() +
+  geom_polygon(data=Oregon, aes(x=long, y=lat))
+print(p)
+
+## Plot a heat map layer: Polygons with fill colors based on
+## relative frequency of events
+COVID.map <- p + stat_density2d(data=subset.expanded, aes(x=longitude, y=latitude, fill=..level.., alpha=..level..), geom="polygon")
+print(COVID.map)
 ```

@@ -17,7 +17,7 @@
       <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/04/27/mapping-covid-19-cases-in-oregon/</guid>
-      <description>Session OverviewThis week, Kelsey spent some time mapping the COVID-19 cases in Oregon and generated some plots for us. She already has provided some mostillustrative documentation for her code, so I will simply attempt to augment what she has already done.
+      <description>Session OverviewThis week, Kelsey spent some time mapping the COVID-19 cases in Oregon and generated some plots forus. She already has provided some most illustrative documentation for her code, so I will simplyattempt to augment what she has already done.
 In this post, we will be covering the following subjects:
 Subsetting the full dataset to obtain only the Oregon casesDividing the Oregon data into 10-day intervals for analysisGenerating a 2-dimensional density plot (heatmap) of the confirmed cases in OregonAs always, if you’d like to download the code and run it yourself, check it out on github.</description>
     </item>
