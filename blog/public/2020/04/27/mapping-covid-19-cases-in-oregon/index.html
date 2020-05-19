@@ -64,7 +64,7 @@
 
   <article class="article">
     
-    <span class="article-duration">6 min read</span>
+    <span class="article-duration">10 min read</span>
     
 
     <h1 class="article-title">Mapping COVID-19 Cases in Oregon</h1>
@@ -90,7 +90,9 @@ attempt to augment what she has already done.</p>
 </ul>
 <p>As always, if you’d like to download the code and run it yourself, <a href="https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session3/covid_heat_map.R"><strong>check it out on github</strong></a>.
 I have edited out a few things in this post for clarity, so again, check out the link above to see
-the script in its full glory.</p>
+the script in its full glory. There is much to unpack in this script, and I would highly recommend
+that you run it yourself line-by-line to see what each command outputs. Please do not hesistate to
+reach out to me if you have questions on any of this! :)</p>
 <hr />
 </div>
 <div id="setting-up-the-environment" class="section level2">
@@ -126,8 +128,8 @@ dbDisconnect(con)
 <div id="subsetting-the-data" class="section level2">
 <h2>Subsetting the data</h2>
 <p>To orient ourselves to the data, let’s first look at the number of cases in Oregon. Here we
-are just looking at data since 01 March, because the data seem more consistently documented
-since that date.</p>
+are just looking at data since 01 March, because the data seem more consistently documented (in terms
+of how they are encoded in the database) since that date.</p>
 <pre class="r"><code>### Summary of Oregon cases using the same method that Zach presented in the first class ###
 oregon_cases.dt &lt;- full.dt[which((grepl(&#39;, OR&#39;, full.dt$province_state) | 
                                     full.dt$province_state ==&#39;Oregon&#39;
@@ -147,42 +149,97 @@ ggplot(melted.dt, aes(x=last_update, y=Number.Reported, color=Cases)) +
   geom_line()</code></pre>
 <p><img src="/post/session3/mapping-oregon-cases_files/figure-html/first-look-1.png" width="672" /></p>
 <p>What are some interesting trends that you see? Personally I find it interesting that no one appears
-to be reporting <strong>recovered</strong> cases (pink line). Perhaps they are trying to capture that metric by
-reporting the number of <strong>active</strong> cases (purple line)?</p>
-<p>Now we are going to make a map of Oregon and plot on top of it the spatial distribution of COVID-19
-cases.</p>
+to be reporting <code>recovered</code> cases (pink line). Perhaps they are trying to capture that metric by
+reporting the number of <code>active</code> cases (purple line)?</p>
+<p>Now that we’ve re-acquainted ourselves with the general temporal trend of the data, we still need to
+massage the dataset a bit more to prepare it to be plotted on a heatmap. Kelsey describes what she
+is doing in the comments, so you can follow along there. She takes you through the process of
+exploring the dataset to see what needs to be manipulated, as well as the process of actually
+manipulating it. I’ll provide a brief summary of what is done at each step as well.</p>
+<p>First, let’s seach through the <code>province_state</code> column for strings of letters that will return <strong>Oregon</strong>
+data. Since the data were collected at the county level in the initial phase of the project, we
+need to search for tags like <strong>OR</strong> and <strong>Oregon</strong> to find all records reported in the state.</p>
 <pre class="r"><code>### Subset data down to only Oregon data ###
-# Look at unique values for Oregon province_state, we had a change in reporting so we are going to 
-# only use the data from the update onwards.
-# print(full.dt[which((grepl(&#39;, OR&#39;, full.dt$province_state) | full.dt$province_state ==&#39;Oregon&#39;) &amp; 
-#                       !is.na(full.dt$latitude)
-#                     ), ]$province_state %&gt;% unique
-     # )
-covid.OR&lt;-full.dt[which(full.dt$province_state ==&#39;Oregon&#39; &amp;  !is.na(full.dt$latitude) &amp; 
+# Look at the last 6 unique values for Oregon province_state; we had a change in reporting so we 
+# are going to only use the data from the update onwards.
+full.dt[which((grepl(&#39;, OR&#39;, full.dt$province_state) | full.dt$province_state ==&#39;Oregon&#39;) &amp;
+                      !is.na(full.dt$latitude)
+                    ), ]$province_state %&gt;% unique %&gt;% tail</code></pre>
+<pre><code>## [1] &quot;Washington County, OR&quot; &quot;Jackson County, OR &quot;   &quot;Klamath County, OR&quot;   
+## [4] &quot;Douglas County, OR&quot;    &quot;Marion County, OR&quot;     &quot;Oregon&quot;</code></pre>
+<p>Something to note here is that in late March, the maintainters of this dataset changed the way they
+encoded U.S data. Prior to this date, both the county and state names were included in the <code>province_state</code>
+column. The updated convention is to include only the name of the state in the <code>province_state</code> and
+move the county name to <code>admin2</code>. This makes querying the data much easier, and so we are only using
+the records that adhere to this convention.</p>
+<pre class="r"><code>covid.OR&lt;-full.dt[which(full.dt$province_state ==&#39;Oregon&#39; &amp;  !is.na(full.dt$latitude) &amp; 
                           !is.na(full.dt$admin2)
-                        ), ]
-
-# Look at the data split by date to determine how to work with it #
-# covid.OR %&gt;% split(.,.$last_update) %&gt;% .[c(1,2)]
-
-# Add new fields and make the date pretty for plotting
+                        ), ]</code></pre>
+<p>Now that we’ve filtered the dataset to just the Oregon cases, we will split them by date (<code>last_update</code>)
+and group them into 10-day intervals for plotting. As Kelsey mentioned in the session, 7-day (1-week)
+intervals would have worked just as well. The length of the interval we choose isn’t terribly important –
+it is just a means by which to aggregate the data into bins so that we may look at change over time.<br />
+This interval does not currently exist in the dataset, so we must create it ourselves. Here we’ve
+given it the name <code>period</code> to denote the <em>period of time</em> over which we will look at change.</p>
+<pre class="r"><code># Look at the data split by date to determine how to work with it #
+covid.OR %&gt;% split(.,.$last_update) %&gt;% .[c(1,2)] %&gt;% lapply(., head)</code></pre>
+<pre><code>## $`2020-03-22`
+##      id province_state country_region last_update confirmed deaths recovered
+## 1: 8633         Oregon             US  2020-03-22        55      1         0
+## 2: 8634         Oregon             US  2020-03-22        22      1         0
+## 3: 8635         Oregon             US  2020-03-22        19      1         0
+## 4: 8636         Oregon             US  2020-03-22        19      1         0
+## 5: 8637         Oregon             US  2020-03-22        12      0         0
+## 6: 8638         Oregon             US  2020-03-22        10      0         0
+##    latitude longitude  fips     admin2 active           combined_key
+## 1: 45.55973 -123.0955 41067 Washington      0 Washington, Oregon, US
+## 2: 44.90288 -122.5815 41047     Marion      0     Marion, Oregon, US
+## 3: 45.54748 -122.4169 41051  Multnomah      0  Multnomah, Oregon, US
+## 4: 44.48899 -122.5373 41043       Linn      0       Linn, Oregon, US
+## 5: 45.18787 -122.2180 41005  Clackamas      0  Clackamas, Oregon, US
+## 6: 43.91570 -121.2289 41017  Deschutes      0  Deschutes, Oregon, US
+## 
+## $`2020-03-23`
+##       id province_state country_region last_update confirmed deaths recovered
+## 1: 11267         Oregon             US  2020-03-23         0      0         0
+## 2: 11335         Oregon             US  2020-03-23         4      0         0
+## 3: 11661         Oregon             US  2020-03-23        14      0         0
+## 4: 11686         Oregon             US  2020-03-23         0      0         0
+## 5: 11758         Oregon             US  2020-03-23         0      0         0
+## 6: 11782         Oregon             US  2020-03-23         0      0         0
+##    latitude longitude  fips    admin2 active          combined_key
+## 1: 44.70916 -117.6750 41001     Baker      0     Baker, Oregon, US
+## 2: 44.49167 -123.4317 41003    Benton      0    Benton, Oregon, US
+## 3: 45.18787 -122.2180 41005 Clackamas      0 Clackamas, Oregon, US
+## 4: 45.99713 -123.6607 41007   Clatsop      0   Clatsop, Oregon, US
+## 5: 45.94464 -123.0891 41009  Columbia      0  Columbia, Oregon, US
+## 6: 43.17407 -124.0595 41011      Coos      0      Coos, Oregon, US</code></pre>
+<pre class="r"><code># Add new fields and make the date pretty for plotting
 covid.OR$month&lt;-covid.OR$last_update %&gt;% format(., &quot;%B&quot;)
 
 # Separate each month into &#39;periods&#39; for analysis over time. (I don&#39;t know why I didn&#39;t do weeks lol)
 covid.OR$period&lt;-&quot;NA&quot;
-covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% paste0(&#39;0&#39;,1:9),]$period&lt;-paste0(covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% paste0(&#39;0&#39;,1:9),]$month,&#39; 1-9&#39;)
-covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% 10:19,]$period&lt;-paste0(covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% 10:19,]$month,&#39; 10-19&#39;)
-covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% 20:31,]$period&lt;-paste0(covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% 20:31,]$month,&#39; 20-31&#39;)
+covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% paste0(&#39;0&#39;,1:9),]$period&lt;-paste0(
+  covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% paste0(&#39;0&#39;,1:9),]$month,&#39; 1-9&#39;)
+covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% 10:19,]$period&lt;-paste0(
+  covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% 10:19,]$month,&#39; 10-19&#39;)
+covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% 20:31,]$period&lt;-paste0(
+  covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% 20:31,]$month,&#39; 20-31&#39;)
 
 # Create factor levels for ggplot facet wrap
-covid.OR$period&lt;-covid.OR$period %&gt;% factor(levels = unique(.))
-
-# Look at only deaths firsts, so subset out only that data
+covid.OR$period&lt;-covid.OR$period %&gt;% factor(levels = unique(.))</code></pre>
+<p>Next, we filter the dataset further to include only the columns we need to generate a mapped product.
+We need the variable of interest to plot, in this case the number of COVID-19-related deaths in Oregon,
+so we will keep the <code>deaths</code> column. Since we are creating a map, we of course need geographic coordinates,
+and so will keep the <code>latitude</code> and <code>longitude</code> columns. Finally, we need the temporal period over which
+we will bin the data, so we must keep the <code>period</code> column.</p>
+<pre class="r"><code># Look at only deaths firsts, so subset out only that data
 subset&lt;-covid.OR[,c(&#39;deaths&#39;,&#39;latitude&#39;, &#39;longitude&#39;, &#39;period&#39;)]
 
-# The function we will be using to create our heat map requires that each value be a unique &#39;event&#39; with its own coordinate location
-# rather than being able to weight the points by a particular value, because of this we must replicate our rows and their lat/long
-# data by the number of the parameter of interest.
+# The function we will be using to create our heat map requires that each value be a unique &#39;event&#39; 
+# with its own coordinate location rather than being able to weight the points by a particular value. 
+# Because of this we must replicate our rows and their lat/long data by the number of the parameter 
+# of interest.
 subset.expanded &lt;- subset[rep(1:nrow(subset), subset$deaths)]
 # Check out the results
 tail(subset.expanded, 20)</code></pre>
@@ -222,6 +279,9 @@ print(subset.summary)</code></pre>
 ## 125: April 20-31 45.16293 -121.1671      2
 ## 126: April 20-31 45.55973 -123.0955     10
 ## 127: April 20-31 45.23330 -123.3087      6</code></pre>
+<p>That was a lot of work, but now we are finally ready to make our map! We will use the <code>maps</code> package
+to generate a nice Oregon-shaped polygon and then use our old friend <code>ggplot2</code> to plot create point
+and heat maps of the dataset.</p>
 <pre class="r"><code># Generate a map of Oregon to plot the COVID data on using &#39;maps&#39; package
 all_states&lt;-map_data(&#39;state&#39;)
 head(all_states)</code></pre>
@@ -236,12 +296,40 @@ head(all_states)</code></pre>
 p &lt;- ggplot() +
   geom_polygon(data=Oregon, aes(x=long, y=lat))
 print(p)</code></pre>
-<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/subset-data-1.png" width="672" /></p>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/map-deaths-1.png" width="672" /></p>
 <pre class="r"><code>## Plot a heat map layer: Polygons with fill colors based on
 ## relative frequency of events
-COVID.map &lt;- p + stat_density2d(data=subset.expanded, aes(x=longitude, y=latitude, fill=..level.., alpha=..level..), geom=&quot;polygon&quot;)
+COVID.map &lt;- p + stat_density2d(data=subset.expanded, aes(x=longitude, y=latitude, fill=..level.., 
+                                                          alpha=..level..), geom=&quot;polygon&quot;)
 print(COVID.map)</code></pre>
-<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/subset-data-2.png" width="672" /></p>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/map-deaths-2.png" width="672" /></p>
+<pre class="r"><code># Remove legends and add title
+# Define the spectral colors to fill the density contours using the &#39;RColorBrewer&#39; package
+display.brewer.all(n=NULL, type=&quot;all&quot;, select=NULL, exact.n=TRUE,
+                   colorblindFriendly=FALSE)</code></pre>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/map-deaths-3.png" width="672" /></p>
+<pre class="r"><code>COVID.map &lt;- COVID.map + theme(legend.position = &#39;none&#39;) +
+  ggtitle(&quot;Oregon Covid-19 Deaths: Heat Map&quot;) +
+  scale_fill_gradientn(colours=brewer.pal(7, &quot;Reds&quot;))
+print(COVID.map)</code></pre>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/map-deaths-4.png" width="672" /></p>
+<pre class="r"><code>## Plot Covid-19 by the period that we created earlier
+COVID.heat.map &lt;- COVID.map + facet_wrap(~period)
+# print(COVID.heat.map)
+
+# Create new map with geom_point layer that uses the max deaths by location and period to dictate  
+# size (heat map with no interpolation + represents all values)
+COVID.point.map &lt;- p + geom_point(data=subset.summary, aes(x=longitude, y=latitude, size=deaths, 
+                                                           color=deaths), alpha = 0.7) +
+  ggtitle(&quot;Oregon Covid-19 Deaths: Point&quot;) +
+  scale_color_gradientn(colours=brewer.pal(7, &quot;Reds&quot;)) + 
+  facet_wrap(~period)
+# print(COVID.point.map)
+
+# Plot both maps next to each other and compare using the gridExtra package
+# deaths &lt;-grid.arrange(COVID.heat.map, COVID.point.map, ncol = 2)</code></pre>
+<p>Here are both maps plotted together:</p>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/print-heatmaps-1.png" width="672" /><img src="/post/session3/mapping-oregon-cases_files/figure-html/print-heatmaps-2.png" width="672" /></p>
 <hr />
 </div>
 <div id="further-reading" class="section level2">
