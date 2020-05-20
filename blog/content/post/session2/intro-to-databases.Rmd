@@ -13,13 +13,14 @@ knitr::opts_chunk$set(warning = FALSE)
 
 ## Session Overview
 This week as part of the series, Kyle introduced us to some basic database management
-by moving the csv data that we dowloaded from the [JHU CSSE database](https://github.com/CSSEGISandData/COVID-19) to a local PostgresSQL instance on his machine and demoing some simple commands.  The main 
+by moving the csv data that we dowloaded from the [JHU CSSE database](https://github.com/CSSEGISandData/COVID-19) 
+to a local PostgresSQL instance on his machine and demoing some simple commands.  The main 
 updates to the code in the session were:
 
 * Instead of downloading every csv from the John's Hopkins database every time we
-run the script, only the most recent csv files (i.e. the ones missing from the **data/** directory) are downloaded, and they are automatically inserted into the database hosted on Kyle's work computer ([*insert_report_data.R*](https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/insert_report_data.R)).
+run the script, only the most recent csv files (i.e. the ones missing from the `data/` directory) are downloaded, and they are automatically inserted into the database hosted on Kyle's work computer ([*insert_report_data.R*](https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/insert_report_data.R)).
 * A dummy dataset for folks to test out SQL commands ([*simple_database_queries.R*](https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/simple_database_queries.R)).
-* A basic example of generating a map of the COVID-19 dataset using the **sf** package in R ([*sf_example_simple.R*](https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/sf_example_simple.R)).
+* A basic example of generating a map of the COVID-19 dataset using the `sf` package in R ([*sf_example_simple.R*](https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/sf_example_simple.R)).
 
 Check out the [scripts in our GitHub repository](https://github.com/H4estu/COVID19-Data-Exploration/tree/Rmarkdown/scripts/R/session2)
 to see everything we did.  
@@ -43,9 +44,9 @@ to handle bad or null values in your table.  If you have more than one table
 in your database, **foreign keys** relate, or connect, the tables in your database
 to one another.  
 
-In the CO2 example above, we would use the **id** column as the primary key.  Since
+In the `CO2` example above, we would use the `id` column as the primary key.  Since
 there are no other tables in the database, we have no need for a foreign key.  You 
-can explore this dataset further in R using **datasets::CO2**.
+can explore this dataset further in R using `datasets::CO2`.
 
 
 PostgreSQL is one type of relational database management system (RDBMS), and
@@ -86,12 +87,11 @@ that we won't go into detail here.  However there are plenty of resources online
 are interested in learning more!
 
 
-## A Simple Map Using **sf**
+## A Simple Map Using `sf`
 The last thing we did in our previous session was to create a global map of the the
 COVID-19 dataset.  Each row in the dataset is represented as a point on the map.
 Below I've made a map of the cases in the continguious U.S.  I encourage you to 
-check out the code in the file [*sf_example_simple.R*](https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/sf_example_simple.R) and play around with it yourself!  Note: you will
-have to be connected to the VPN to access Kyle's computer.
+check out the code in the file [*sf_example_simple.R*](https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/sf_example_simple.R) and play around with it yourself!  Note: you will have to be connected to the VPN to access Kyle's computer.
 
 ### Connect to the database
 ```{r connect-database, results='hide'}

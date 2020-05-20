@@ -80,13 +80,14 @@
 <div id="session-overview" class="section level2">
 <h2>Session Overview</h2>
 <p>This week as part of the series, Kyle introduced us to some basic database management
-by moving the csv data that we dowloaded from the <a href="https://github.com/CSSEGISandData/COVID-19">JHU CSSE database</a> to a local PostgresSQL instance on his machine and demoing some simple commands. The main
+by moving the csv data that we dowloaded from the <a href="https://github.com/CSSEGISandData/COVID-19">JHU CSSE database</a>
+to a local PostgresSQL instance on his machine and demoing some simple commands. The main
 updates to the code in the session were:</p>
 <ul>
 <li>Instead of downloading every csv from the John’s Hopkins database every time we
-run the script, only the most recent csv files (i.e. the ones missing from the <strong>data/</strong> directory) are downloaded, and they are automatically inserted into the database hosted on Kyle’s work computer (<a href="https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/insert_report_data.R"><em>insert_report_data.R</em></a>).</li>
+run the script, only the most recent csv files (i.e. the ones missing from the <code>data/</code> directory) are downloaded, and they are automatically inserted into the database hosted on Kyle’s work computer (<a href="https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/insert_report_data.R"><em>insert_report_data.R</em></a>).</li>
 <li>A dummy dataset for folks to test out SQL commands (<a href="https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/simple_database_queries.R"><em>simple_database_queries.R</em></a>).</li>
-<li>A basic example of generating a map of the COVID-19 dataset using the <strong>sf</strong> package in R (<a href="https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/sf_example_simple.R"><em>sf_example_simple.R</em></a>).</li>
+<li>A basic example of generating a map of the COVID-19 dataset using the <code>sf</code> package in R (<a href="https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/sf_example_simple.R"><em>sf_example_simple.R</em></a>).</li>
 </ul>
 <p>Check out the <a href="https://github.com/H4estu/COVID19-Data-Exploration/tree/Rmarkdown/scripts/R/session2">scripts in our GitHub repository</a>
 to see everything we did.</p>
@@ -111,83 +112,83 @@ of carbon dioxide uptake in grass plants data is shown below.</p>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Mn1</td>
+<td align="left">Mn3</td>
 <td align="left">Mississippi</td>
 <td align="left">nonchilled</td>
-<td align="right">350</td>
-<td align="right">30.0</td>
+<td align="right">1000</td>
+<td align="right">27.8</td>
 <td align="right">1</td>
 </tr>
 <tr class="even">
-<td align="left">Qc1</td>
-<td align="left">Quebec</td>
-<td align="left">chilled</td>
-<td align="right">95</td>
-<td align="right">14.2</td>
+<td align="left">Mn3</td>
+<td align="left">Mississippi</td>
+<td align="left">nonchilled</td>
+<td align="right">500</td>
+<td align="right">28.5</td>
 <td align="right">2</td>
 </tr>
 <tr class="odd">
 <td align="left">Qc2</td>
 <td align="left">Quebec</td>
 <td align="left">chilled</td>
-<td align="right">350</td>
-<td align="right">38.8</td>
+<td align="right">250</td>
+<td align="right">35.0</td>
 <td align="right">3</td>
 </tr>
 <tr class="even">
-<td align="left">Mn2</td>
-<td align="left">Mississippi</td>
+<td align="left">Qn1</td>
+<td align="left">Quebec</td>
 <td align="left">nonchilled</td>
-<td align="right">95</td>
-<td align="right">12.0</td>
+<td align="right">675</td>
+<td align="right">39.2</td>
 <td align="right">4</td>
 </tr>
 <tr class="odd">
-<td align="left">Mn3</td>
-<td align="left">Mississippi</td>
-<td align="left">nonchilled</td>
-<td align="right">350</td>
-<td align="right">27.9</td>
-<td align="right">5</td>
-</tr>
-<tr class="even">
-<td align="left">Qc2</td>
-<td align="left">Quebec</td>
-<td align="left">chilled</td>
-<td align="right">95</td>
-<td align="right">9.3</td>
-<td align="right">6</td>
-</tr>
-<tr class="odd">
-<td align="left">Qc2</td>
-<td align="left">Quebec</td>
-<td align="left">chilled</td>
-<td align="right">675</td>
-<td align="right">37.5</td>
-<td align="right">7</td>
-</tr>
-<tr class="even">
 <td align="left">Mc3</td>
 <td align="left">Mississippi</td>
 <td align="left">chilled</td>
-<td align="right">1000</td>
-<td align="right">19.9</td>
-<td align="right">8</td>
-</tr>
-<tr class="odd">
-<td align="left">Qc1</td>
-<td align="left">Quebec</td>
-<td align="left">chilled</td>
-<td align="right">1000</td>
-<td align="right">38.7</td>
-<td align="right">9</td>
+<td align="right">95</td>
+<td align="right">10.6</td>
+<td align="right">5</td>
 </tr>
 <tr class="even">
 <td align="left">Mc1</td>
 <td align="left">Mississippi</td>
 <td align="left">chilled</td>
+<td align="right">250</td>
+<td align="right">18.1</td>
+<td align="right">6</td>
+</tr>
+<tr class="odd">
+<td align="left">Mn2</td>
+<td align="left">Mississippi</td>
+<td align="left">nonchilled</td>
 <td align="right">350</td>
+<td align="right">31.8</td>
+<td align="right">7</td>
+</tr>
+<tr class="even">
+<td align="left">Mn2</td>
+<td align="left">Mississippi</td>
+<td align="left">nonchilled</td>
+<td align="right">250</td>
+<td align="right">30.6</td>
+<td align="right">8</td>
+</tr>
+<tr class="odd">
+<td align="left">Mc3</td>
+<td align="left">Mississippi</td>
+<td align="left">chilled</td>
+<td align="right">675</td>
 <td align="right">18.9</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="left">Qn2</td>
+<td align="left">Quebec</td>
+<td align="left">nonchilled</td>
+<td align="right">500</td>
+<td align="right">40.6</td>
 <td align="right">10</td>
 </tr>
 </tbody>
@@ -197,9 +198,9 @@ help to organize the data so that it may be efficiently queried. They also help
 to handle bad or null values in your table. If you have more than one table
 in your database, <strong>foreign keys</strong> relate, or connect, the tables in your database
 to one another.</p>
-<p>In the CO2 example above, we would use the <strong>id</strong> column as the primary key. Since
+<p>In the <code>CO2</code> example above, we would use the <code>id</code> column as the primary key. Since
 there are no other tables in the database, we have no need for a foreign key. You
-can explore this dataset further in R using <strong>datasets::CO2</strong>.</p>
+can explore this dataset further in R using <code>datasets::CO2</code>.</p>
 <p>PostgreSQL is one type of relational database management system (RDBMS), and
 it is the one we are using for the COVID-19 dataset, as well as for our various projects at work.</p>
 <div id="database-benefits" class="section level3">
@@ -250,12 +251,11 @@ are interested in learning more!</p>
 </div>
 </div>
 <div id="a-simple-map-using-sf" class="section level2">
-<h2>A Simple Map Using <strong>sf</strong></h2>
+<h2>A Simple Map Using <code>sf</code></h2>
 <p>The last thing we did in our previous session was to create a global map of the the
 COVID-19 dataset. Each row in the dataset is represented as a point on the map.
 Below I’ve made a map of the cases in the continguious U.S. I encourage you to
-check out the code in the file <a href="https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/sf_example_simple.R"><em>sf_example_simple.R</em></a> and play around with it yourself! Note: you will
-have to be connected to the VPN to access Kyle’s computer.</p>
+check out the code in the file <a href="https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/sf_example_simple.R"><em>sf_example_simple.R</em></a> and play around with it yourself! Note: you will have to be connected to the VPN to access Kyle’s computer.</p>
 <div id="connect-to-the-database" class="section level3">
 <h3>Connect to the database</h3>
 <pre class="r"><code>library(sf)
