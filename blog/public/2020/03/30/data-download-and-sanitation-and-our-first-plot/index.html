@@ -89,10 +89,10 @@ since January 22, 2020.</p>
 <h2>Libraries</h2>
 <p>At the top of any script we write, first we include all the libraries used in this
 analysis. These “libraries” are packages of code that we import to our script
-so we may use some of their handy features. For example, the <strong>xml2</strong> library allows
+so we may use some of their handy features. For example, the <code>xml2</code> library allows
 us to download a webpage and extract all of the text from it in just a few simple
-lines of code! A few commonly used libraries include <strong>data.table</strong>, <strong>dplyr</strong>, and
-<strong>magrittr</strong>, all of which we will go into later.</p>
+lines of code! A few commonly used libraries include <code>data.table</code>, <code>dplyr</code>, and
+<code>magrittr</code>, all of which we will go into later.</p>
 <pre class="r"><code>library(magrittr)
 library(xml2)</code></pre>
 <pre><code>## Warning: package &#39;xml2&#39; was built under R version 3.6.3</code></pre>
@@ -197,10 +197,10 @@ how the number of confirmed COVID-19 cases, the number of reported deaths due to
 the virus, and the number of reported cases have changed over time.</p>
 <div id="replace-nas-with-zeros" class="section level3">
 <h3>Replace NA’s with zeros</h3>
-<p>It is often convenient to replace NA values in a dataset with zeros, since NA
+<p>It is often convenient to replace <code>NA</code> values in a dataset with zeros, since <code>NA</code>
 values in R (as well as other programming languages) can have weird or behavior
 that may be different from what you are expecting (e.g. summing values in
-column that has an NA in it will return NA).</p>
+column that has an <code>NA</code> in it will return <code>NA</code>).</p>
 <pre class="r"><code>data.dt[data.dt$Confirmed%&gt;%is.na, &#39;Confirmed&#39;] &lt;- 0
 data.dt[data.dt$Deaths%&gt;%is.na, &#39;Deaths&#39;] &lt;- 0
 data.dt[data.dt$Recovered%&gt;%is.na, &#39;Recovered&#39;] &lt;- 0
@@ -213,11 +213,11 @@ data.dt</code></pre>
 ##      4:         Fujian     Mainland China  2020-01-22         1      0
 ##      5:          Gansu     Mainland China  2020-01-22         0      0
 ##     ---                                                               
-## 185555:                West Bank and Gaza  2020-05-15       375      2
-## 185556:                    Western Sahara  2020-05-15         6      0
-## 185557:                             Yemen  2020-05-15        85     12
-## 185558:                            Zambia  2020-05-15       654      7
-## 185559:                          Zimbabwe  2020-05-15        37      4
+## 198774:                West Bank and Gaza  2020-05-19       388      2
+## 198775:                    Western Sahara  2020-05-19         6      0
+## 198776:                             Yemen  2020-05-19       130     20
+## 198777:                            Zambia  2020-05-19       761      7
+## 198778:                          Zimbabwe  2020-05-19        46      4
 ##         Recovered Latitude Longitude FIPS Admin2       Lat     Long_ Active
 ##      1:         0       NA        NA   NA   &lt;NA&gt;        NA        NA     NA
 ##      2:         0       NA        NA   NA   &lt;NA&gt;        NA        NA     NA
@@ -225,11 +225,11 @@ data.dt</code></pre>
 ##      4:         0       NA        NA   NA   &lt;NA&gt;        NA        NA     NA
 ##      5:         0       NA        NA   NA   &lt;NA&gt;        NA        NA     NA
 ##     ---                                                                    
-## 185555:       310       NA        NA   NA         31.95220  35.23320     63
-## 185556:         6       NA        NA   NA         24.21550 -12.88580      0
-## 185557:         1       NA        NA   NA         15.55273  48.51639     72
-## 185558:       124       NA        NA   NA        -13.13390  27.84933    523
-## 185559:        13       NA        NA   NA        -19.01544  29.15486     20
+## 198774:       337       NA        NA   NA         31.95220  35.23320     49
+## 198775:         6       NA        NA   NA         24.21550 -12.88580      0
+## 198776:         1       NA        NA   NA         15.55273  48.51639    109
+## 198777:       192       NA        NA   NA        -13.13390  27.84933    562
+## 198778:        18       NA        NA   NA        -19.01544  29.15486     24
 ##               Combined_Key
 ##      1:               &lt;NA&gt;
 ##      2:               &lt;NA&gt;
@@ -237,11 +237,11 @@ data.dt</code></pre>
 ##      4:               &lt;NA&gt;
 ##      5:               &lt;NA&gt;
 ##     ---                   
-## 185555: West Bank and Gaza
-## 185556:     Western Sahara
-## 185557:              Yemen
-## 185558:             Zambia
-## 185559:           Zimbabwe</code></pre>
+## 198774: West Bank and Gaza
+## 198775:     Western Sahara
+## 198776:              Yemen
+## 198777:             Zambia
+## 198778:           Zimbabwe</code></pre>
 </div>
 <div id="select-country" class="section level3">
 <h3>Select Country</h3>
@@ -255,14 +255,14 @@ to verify our results with those reported by the CSSE data dashboard.</p>
 question of interest. All of the organizing we did to our data before this was so
 that we can use these powerful filtering, grouping and summarizing tools to select
 the chunks of our data that we are interested in.</p>
-<p>These 4 lines make heavy use of %&gt;%’, which is the piping operator from the
-<strong>magrittr</strong> library, which conveniently allows us to string together multiple
+<p>These 4 lines make heavy use of <code>%&gt;%</code>, which is the piping operator from the
+<code>magrittr</code> library. This conveniently allows us to string together multiple
 operations in a single step. In the 4 lines below we:</p>
 <ol style="list-style-type: decimal">
-<li>SELECT from the dataset only the rows that match our country of interest.</li>
-<li>GROUP the selected rows by their date (to get a chronological timeline of
+<li><code>SELECT</code> from the dataset only the rows that match our country of interest.</li>
+<li><code>GROUP</code> the selected rows by their date (to get a chronological timeline of
 the number of cases in each category).</li>
-<li>SUMMARIZE all the observations (i.e. rows) for each date into a single value.
+<li><code>SUMMARIZE</code> all the observations (i.e. rows) for each date into a single value.
 We take only the maximum value reported for each day, since that will reflect
 the number of reported confirmed cases/deaths/recoveries for that day.</li>
 </ol>
@@ -355,12 +355,16 @@ country_cases.dt</code></pre>
 ## 81:  2020-05-13    109039  30911
 ## 82:  2020-05-14    112541  31106
 ## 83:  2020-05-15     38568  15296
+## 84:  2020-05-16     40962  15411
+## 85:  2020-05-17     41389  15450
+## 86:  2020-05-18     41895  15519
+## 87:  2020-05-19     42403  15543
 ##     Last_Update Recovered Deaths</code></pre>
 <p>Here, we make separate data table for confirmed cases, since they are up to an
 order of magnitude higher than recovered/death reports. Visually it is easier to
 distinguish the plots if they are separated, since if all 3 were on the same plot
 the plots for recovered/deaths would be very small compared to the number of confirmed
-cases. The steps are the same we just did for the previous data.table</p>
+cases. The steps are the same we just did for the previous <code>data.table</code></p>
 <pre class="r"><code>country_confirmed.dt &lt;- data.dt[data.dt$Country_Region==country.switch,] %&gt;% 
     group_by(Last_Update) %&gt;% 
     summarize(Confirmed=max(Confirmed)) %&gt;% 
@@ -369,7 +373,7 @@ cases. The steps are the same we just did for the previous data.table</p>
 </div>
 <div id="our-first-plots" class="section level2">
 <h2>Our First Plots</h2>
-<p>Finally, let us plot the data! Here we make use of the <strong>ggplot2</strong> library to
+<p>Finally, let us plot the data! Here we make use of the <code>ggplot2</code> library to
 plot our data. In this first plot, we show the number of reported cases (y-axis)
 over time (x-axis). Again, the plot is showing the maximum number of reported
 cases each day since Jan. 22, 2020 for our country of interest.</p>

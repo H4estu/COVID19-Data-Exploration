@@ -28,7 +28,7 @@ In this post, we will be covering the following subjects:
       <pubDate>Mon, 13 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/04/13/an-introduction-to-databases/</guid>
-      <description>Session OverviewThis week as part of the series, Kyle introduced us to some basic database managementby moving the csv data that we dowloaded from the JHU CSSE database to a local PostgresSQL instance on his machine and demoing some simple commands. The mainupdates to the code in the session were:
+      <description>Session OverviewThis week as part of the series, Kyle introduced us to some basic database managementby moving the csv data that we dowloaded from the JHU CSSE databaseto a local PostgresSQL instance on his machine and demoing some simple commands. The mainupdates to the code in the session were:
 Instead of downloading every csv from the John’s Hopkins database every time werun the script, only the most recent csv files (i.</description>
     </item>
     
