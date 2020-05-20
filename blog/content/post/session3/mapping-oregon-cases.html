@@ -105,6 +105,9 @@ the records that adhere to this convention.</p>
 <pre class="r"><code>covid.OR&lt;-full.dt[which(full.dt$province_state ==&#39;Oregon&#39; &amp;  !is.na(full.dt$latitude) &amp; 
                           !is.na(full.dt$admin2)
                         ), ]</code></pre>
+</div>
+<div id="examine-change-over-time" class="section level2">
+<h2>Examine Change Over Time</h2>
 <p>Now that we’ve filtered the dataset to just the Oregon cases, we will split them by date (<code>last_update</code>)
 and group them into 10-day intervals for plotting. As Kelsey mentioned in the session, 7-day (1-week)
 intervals would have worked just as well. The length of the interval we choose isn’t terribly important –
@@ -158,6 +161,9 @@ covid.OR[covid.OR$last_update %&gt;% format(., &quot;%d&quot;) %in% 20:31,]$peri
 
 # Create factor levels for ggplot facet wrap
 covid.OR$period&lt;-covid.OR$period %&gt;% factor(levels = unique(.))</code></pre>
+</div>
+<div id="plotting-the-data" class="section level2">
+<h2>Plotting the Data</h2>
 <p>Next, we filter the dataset further to include only the columns we need to generate a mapped product.
 We need the variable of interest to plot, in this case the number of COVID-19-related deaths in Oregon,
 so we will keep the <code>deaths</code> column. Since we are creating a map, we of course need geographic coordinates,
@@ -214,15 +220,8 @@ to generate a nice Oregon-shaped polygon and then use our old friend <code>ggplo
 and heat maps of the dataset.</p>
 <pre class="r"><code># Generate a map of Oregon to plot the COVID data on using &#39;maps&#39; package
 all_states&lt;-map_data(&#39;state&#39;)
-head(all_states)</code></pre>
-<pre><code>##        long      lat group order  region subregion
-## 1 -87.46201 30.38968     1     1 alabama      &lt;NA&gt;
-## 2 -87.48493 30.37249     1     2 alabama      &lt;NA&gt;
-## 3 -87.52503 30.37249     1     3 alabama      &lt;NA&gt;
-## 4 -87.53076 30.33239     1     4 alabama      &lt;NA&gt;
-## 5 -87.57087 30.32665     1     5 alabama      &lt;NA&gt;
-## 6 -87.58806 30.32665     1     6 alabama      &lt;NA&gt;</code></pre>
-<pre class="r"><code>Oregon&lt;-all_states[all_states$region==&#39;oregon&#39;,]
+
+Oregon&lt;-all_states[all_states$region==&#39;oregon&#39;,]
 p &lt;- ggplot() +
   geom_polygon(data=Oregon, aes(x=long, y=lat))
 print(p)</code></pre>
@@ -254,13 +253,99 @@ COVID.point.map &lt;- p + geom_point(data=subset.summary, aes(x=longitude, y=lat
   ggtitle(&quot;Oregon Covid-19 Deaths: Point&quot;) +
   scale_color_gradientn(colours=brewer.pal(7, &quot;Reds&quot;)) + 
   facet_wrap(~period)
-# print(COVID.point.map)
-
-# Plot both maps next to each other and compare using the gridExtra package
+print(COVID.point.map)</code></pre>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/map-deaths-5.png" width="672" /></p>
+<pre class="r"><code># Plot both maps next to each other and compare using the gridExtra package
 # deaths &lt;-grid.arrange(COVID.heat.map, COVID.point.map, ncol = 2)</code></pre>
 <p>Here are both maps plotted together:</p>
-<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/print-heatmaps-1.png" width="672" /><img src="/post/session3/mapping-oregon-cases_files/figure-html/print-heatmaps-2.png" width="672" /></p>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/print-maps-deaths-1.png" width="672" /><img src="/post/session3/mapping-oregon-cases_files/figure-html/print-maps-deaths-2.png" width="672" /></p>
 <hr />
+</div>
+<div id="mapping-active-and-confirmed-cases" class="section level2">
+<h2>Mapping Active and Confirmed Cases</h2>
+<p>The rest of the code is more or less replicating what we’ve done above for the <code>confirmed</code> and
+<code>active</code> cases.</p>
+<div id="confirmed-cases" class="section level3">
+<h3>Confirmed Cases</h3>
+<pre class="r"><code>#Now for confirmed cases
+subset.c&lt;-covid.OR[,c(&#39;confirmed&#39;,&#39;latitude&#39;, &#39;longitude&#39;, &#39;period&#39;)]
+subset.expanded.c &lt;- subset.c[rep(1:nrow(subset.c), subset.c$confirmed)]
+subset.summary.c&lt;- subset.c[,.(confirmed=max(confirmed)), by=c(&#39;period&#39;,&#39;latitude&#39;, &#39;longitude&#39;)]
+
+## Plot a heat map layer: Polygons with fill colors based on
+## relative frequency of events which we created by replicating rows by the number of events.
+confirmed.heat.map &lt;- p + 
+  stat_density2d(data=subset.expanded.c, aes(x=longitude, y=latitude, fill=..level.., 
+                                             alpha=..level..), geom=&quot;polygon&quot;) +
+  scale_fill_gradientn(colours=brewer.pal(7, &quot;Reds&quot;)) +
+  theme(legend.position = &#39;none&#39;) +
+  ggtitle(&quot;Oregon Confirmed Covid-19 Cases: Heat Map&quot;) +
+  facet_wrap(~period)
+
+print(confirmed.heat.map)</code></pre>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/map-confirmed-1.png" width="672" /></p>
+<pre class="r"><code>confirmed.point.map &lt;-p +
+  geom_point(data=subset.summary.c, aes(x=longitude, y=latitude, size=confirmed, color=confirmed),
+             alpha = 0.7)+
+  scale_color_gradientn(colours=brewer.pal(7, &quot;Reds&quot;)) +
+  ggtitle(&quot;Oregon Confirmed Covid-19 Cases: Heat Map&quot;) +
+  facet_wrap(~period)
+print(confirmed.point.map)</code></pre>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/map-confirmed-2.png" width="672" /></p>
+<pre class="r"><code># Plot both maps next to each other and compare using the gridExtra package
+# confirmed &lt;- grid.arrange(confirmed.heat.map, confirmed.point.map, ncol = 2)</code></pre>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/print-maps-confirmed-1.png" width="672" /><img src="/post/session3/mapping-oregon-cases_files/figure-html/print-maps-confirmed-2.png" width="672" /></p>
+</div>
+<div id="active-cases" class="section level3">
+<h3>Active Cases</h3>
+<pre class="r"><code>#Now for active cases
+subset.a&lt;-covid.OR[,c(&#39;active&#39;,&#39;latitude&#39;, &#39;longitude&#39;, &#39;period&#39;)]
+subset.expanded.a &lt;- subset.a[rep(1:nrow(subset.a), subset.a$active)]
+subset.summary.a&lt;- subset.a[,.(active=max(active)), by=c(&#39;period&#39;,&#39;latitude&#39;, &#39;longitude&#39;)]
+
+## Plot a heat map layer: Polygons with fill colors based on
+## relative frequency of events which we created by replicating rows by the number of events.
+active.heat.map &lt;- p + 
+  stat_density2d(data=subset.expanded.a, aes(x=longitude, y=latitude, fill=..level.., 
+                                             alpha=..level..), geom=&quot;polygon&quot;) +
+  scale_fill_gradientn(colours=brewer.pal(7, &quot;Reds&quot;)) +
+  theme(legend.position = &#39;none&#39;) +
+  ggtitle(&quot;Oregon Active Covid-19 Cases: Heat Map&quot;) +
+  facet_wrap(~period)
+
+print(active.heat.map)</code></pre>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/map-active-1.png" width="672" /></p>
+<pre class="r"><code>active.point.map &lt;-p +
+  geom_point(data=subset.summary.a, aes(x=longitude, y=latitude, size=active, color=active),
+             alpha = 0.7)+
+  scale_color_gradientn(colours=brewer.pal(7, &quot;Reds&quot;)) +
+  ggtitle(&quot;Oregon Active Covid-19 Cases: Heat Map&quot;) +
+  facet_wrap(~period)
+print(active.point.map)</code></pre>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/map-active-2.png" width="672" /></p>
+<pre class="r"><code># Plot both maps next to each other and compare using the gridExtra package
+# active &lt;- grid.arrange(active.heat.map, active.point.map, ncol = 2)
+
+# Redo the last one and adjust periods so your maps aren&#39;t scrunchie
+active.point.map &lt;-p +
+  geom_point(data=subset.summary.a[subset.summary.a$period %in% c(&#39;April 10-19&#39;, &#39;April 20-31&#39;),], 
+             aes(x=longitude, y=latitude, size=active, color=active),alpha = 0.7)+
+  scale_color_gradientn(colours=brewer.pal(7, &quot;Reds&quot;)) +
+  ggtitle(&quot;Oregon Active Covid-19 Cases: Heat Map&quot;) +
+  facet_wrap(~period)
+print(active.point.map)</code></pre>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/map-active-3.png" width="672" /></p>
+<pre class="r"><code># Plot both maps next to each other and compare using the gridExtra package
+# active &lt;- grid.arrange(active.heat.map, active.point.map, ncol = 2)</code></pre>
+<p><img src="/post/session3/mapping-oregon-cases_files/figure-html/print-maps-active-1.png" width="672" /><img src="/post/session3/mapping-oregon-cases_files/figure-html/print-maps-active-2.png" width="672" /></p>
+<hr />
+<p>This last bit of code wraps all the plots into a tidy little image file that you can email to your
+parents or S.O. to show them all the sweet GIS and coding skills you now have!</p>
+<pre class="r"><code>#Plot all maps together :)
+all_maps &lt;- grid.arrange(deaths, confirmed, active, nrow = 3)
+ggsave(plot=all_maps, file.path(git.path,&#39;covid_maps.jpeg&#39;), height = 11, width = 10)</code></pre>
+<hr />
+</div>
 </div>
 <div id="further-reading" class="section level2">
 <h2>Further Reading</h2>

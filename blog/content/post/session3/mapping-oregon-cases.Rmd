@@ -126,6 +126,7 @@ covid.OR<-full.dt[which(full.dt$province_state =='Oregon' &  !is.na(full.dt$lati
                         ), ]
 ```
 
+## Examine Change Over Time
 Now that we've filtered the dataset to just the Oregon cases, we will split them by date (`last_update`)
 and group them into 10-day intervals for plotting.  As Kelsey mentioned in the session, 7-day (1-week)
 intervals would have worked just as well.  The length of the interval we choose isn't terribly important --
@@ -153,6 +154,7 @@ covid.OR[covid.OR$last_update %>% format(., "%d") %in% 20:31,]$period<-paste0(
 covid.OR$period<-covid.OR$period %>% factor(levels = unique(.))
 ```
 
+## Plotting the Data
 Next, we filter the dataset further to include only the columns we need to generate a mapped product.
 We need the variable of interest to plot, in this case the number of COVID-19-related deaths in Oregon,
 so we will keep the `deaths` column.  Since we are creating a map, we of course need geographic coordinates, 
@@ -183,7 +185,6 @@ and heat maps of the dataset.
 ```{r map-deaths}
 # Generate a map of Oregon to plot the COVID data on using 'maps' package
 all_states<-map_data('state')
-head(all_states)
 
 Oregon<-all_states[all_states$region=='oregon',]
 p <- ggplot() +
@@ -216,7 +217,7 @@ COVID.point.map <- p + geom_point(data=subset.summary, aes(x=longitude, y=latitu
   ggtitle("Oregon Covid-19 Deaths: Point") +
   scale_color_gradientn(colours=brewer.pal(7, "Reds")) + 
   facet_wrap(~period)
-# print(COVID.point.map)
+print(COVID.point.map)
 
 # Plot both maps next to each other and compare using the gridExtra package
 # deaths <-grid.arrange(COVID.heat.map, COVID.point.map, ncol = 2)
@@ -224,12 +225,19 @@ COVID.point.map <- p + geom_point(data=subset.summary, aes(x=longitude, y=latitu
 
 Here are both maps plotted together:
 
-```{r print-heatmaps, echo=FALSE}
+```{r print-maps-deaths, echo=FALSE}
 print(COVID.heat.map)
 print(COVID.point.map)
 ```
 
-```{r map-confirmed, include=FALSE, eval=FALSE}
+***
+
+## Mapping Active and Confirmed Cases
+The rest of the code is more or less replicating what we've done above for the `confirmed` and 
+`active` cases.
+
+### Confirmed Cases
+```{r map-confirmed}
 #Now for confirmed cases
 subset.c<-covid.OR[,c('confirmed','latitude', 'longitude', 'period')]
 subset.expanded.c <- subset.c[rep(1:nrow(subset.c), subset.c$confirmed)]
@@ -255,8 +263,16 @@ confirmed.point.map <-p +
   facet_wrap(~period)
 print(confirmed.point.map)
 # Plot both maps next to each other and compare using the gridExtra package
-confirmed <- grid.arrange(confirmed.heat.map, confirmed.point.map, ncol = 2)
+# confirmed <- grid.arrange(confirmed.heat.map, confirmed.point.map, ncol = 2)
+```
 
+```{r print-maps-confirmed, echo=FALSE}
+print(confirmed.heat.map)
+print(confirmed.point.map)
+```
+
+### Active Cases
+```{r map-active}
 #Now for active cases
 subset.a<-covid.OR[,c('active','latitude', 'longitude', 'period')]
 subset.expanded.a <- subset.a[rep(1:nrow(subset.a), subset.a$active)]
@@ -282,7 +298,7 @@ active.point.map <-p +
   facet_wrap(~period)
 print(active.point.map)
 # Plot both maps next to each other and compare using the gridExtra package
-active <- grid.arrange(active.heat.map, active.point.map, ncol = 2)
+# active <- grid.arrange(active.heat.map, active.point.map, ncol = 2)
 
 # Redo the last one and adjust periods so your maps aren't scrunchie
 active.point.map <-p +
@@ -294,8 +310,20 @@ active.point.map <-p +
 print(active.point.map)
 
 # Plot both maps next to each other and compare using the gridExtra package
-active <- grid.arrange(active.heat.map, active.point.map, ncol = 2)
+# active <- grid.arrange(active.heat.map, active.point.map, ncol = 2)
 
+```
+
+```{r print-maps-active, echo=FALSE}
+print(active.heat.map)
+print(active.point.map)
+```
+
+***
+
+This last bit of code wraps all the plots into a tidy little image file that you can email to your
+parents or S.O. to show them all the sweet GIS and coding skills you now have!
+```{r plot-everything, eval=FALSE}
 #Plot all maps together :)
 all_maps <- grid.arrange(deaths, confirmed, active, nrow = 3)
 ggsave(plot=all_maps, file.path(git.path,'covid_maps.jpeg'), height = 11, width = 10)
