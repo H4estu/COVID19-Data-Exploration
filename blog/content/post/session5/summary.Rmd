@@ -12,7 +12,7 @@ knitr::opts_chunk$set(warning = FALSE)
 ```
 
 ## So What's It All Been About?
-We've done a lot over the past 4 training sessions, so let's review what we've done.  I'll briefly summarize what we've done, and then will generate for us a tidy little Rmarkdown report in which we can see how far we have come.  Links to the original blog posts for each session are linked to in the title of each section.
+We've done a lot over the past 4 training sessions, so let's review what we've done.  I'll briefly summarize what we've done, and in the process will generate for us a tidy little Rmarkdown report in which we can see how far we have come.  Links to the original blog posts for each session are linked to in the title of each section, where you can view the full code and the breakdown of it.
 
 ## [Session 1: Data Download and Sanitization](https://bioanalytics-cvo-quantumspatial.netlify.app/2020/03/30/data-download-and-sanitation-and-our-first-plot/)
 In the first session, we pulled data from the [**John's Hopkins database**](https://github.com/CSSEGISandData/COVID-19) and generated plots of the number of reported cases, deaths, and recoveries for a particular country of interest.
