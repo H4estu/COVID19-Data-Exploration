@@ -75,7 +75,7 @@ print(confirmed.point.map)
 
 There is a bunch to unpack in this session, so I highly recommend you [*read the blogpost, download the code, and try running it yourself*](https://bioanalytics-cvo-quantumspatial.netlify.app/2020/04/27/mapping-covid-19-cases-in-oregon/)  As always, please reach out to me if you have questions on getting your environment set up, running the code, or anything else! :)
 
-## Session 4: Generating a Predictive Model of COVID-19 Cases
+## Session 4: Generating Predictive Models of COVID-19 Cases
 Kyle and Michael did some excellent statistical modeling of the dataset.  Unfortunately I don't have the code for that yet, so the blogpost for that is still incoming.
 However, I do have some links for you to check out on the different types of modeling techniques that were covered in that session:
 
