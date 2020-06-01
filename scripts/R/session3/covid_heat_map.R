@@ -83,7 +83,7 @@ print(p)
 ## Plot a heat map layer: Polygons with fill colors based on
 ## relative frequency of events
 COVID.map <- p + stat_density2d(data=subset.expanded, aes(x=longitude, y=latitude, fill=..level.., alpha=..level..), geom="polygon")
-print(COVID.map)
+# print(COVID.map)
 
 # Remove legends and add title
 # Define the spectral colors to fill the density contours using the 'RColorBrewer' package
@@ -173,4 +173,4 @@ active <- grid.arrange(active.heat.map, active.point.map, ncol = 2)
 
 #Plot all maps together :)
 all_maps <- grid.arrange(deaths, confirmed, active, nrow = 3)
-ggsave(plot=all_maps, 'E:/KWatkins/Development_Meeting/covid_maps.jpeg', height = 11, width = 10)
+# ggsave(plot=all_maps, 'E:/KWatkins/Development_Meeting/covid_maps.jpeg', height = 11, width = 10)

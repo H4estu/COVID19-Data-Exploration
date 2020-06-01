@@ -9,7 +9,7 @@ output: html_document
 
 <div id="so-whats-it-all-been-about" class="section level2">
 <h2>So What’s It All Been About?</h2>
-<p>We’ve done a lot over the past 4 training sessions, so let’s review what we’ve done. I’ll briefly summarize what we’ve done, and then will generate for us a tidy little Rmarkdown report in which we can see how far we have come.</p>
+<p>We’ve done a lot over the past 4 training sessions, so let’s review what we’ve done. I’ll briefly summarize what we’ve done, and then will generate for us a tidy little Rmarkdown report in which we can see how far we have come. Links to the original blog posts for each session are linked to in the title of each section.</p>
 </div>
 <div id="session-1-data-download-and-sanitization" class="section level2">
 <h2><a href="https://bioanalytics-cvo-quantumspatial.netlify.app/2020/03/30/data-download-and-sanitation-and-our-first-plot/">Session 1: Data Download and Sanitization</a></h2>
@@ -19,5 +19,39 @@ output: html_document
 </div>
 <div id="session-2-introduction-to-databases-and-a-simple-gis-example-using-the-sf-library" class="section level2">
 <h2><a href="https://bioanalytics-cvo-quantumspatial.netlify.app/2020/04/13/an-introduction-to-databases/">Session 2: Introduction to Databases and a Simple GIS Example using the <code>sf</code> Library</a></h2>
-<p>In The second session, Kyle introduced us to the basics of databases by converting the script from the first session to download data directly into</p>
+<p>In The second session, Kyle introduced us to the basics of databases and why they are preferable to storing everything in text files (e.g. comma-separated values, or csv, files) on disk. Major beneifts include enhanced:</p>
+<ul>
+<li>Usability: data can be easily managed using a command language known as SQL (Structured Query Language)</li>
+<li>Reliability: transactions with the database are guaranteed to wholly succeed or fail via adherence to a set of standards (<a href="https://database.guide/what-is-acid-in-databases/">ACID compliance</a>), preventing fragments of data being lost</li>
+<li>Security: permissions can be set to limit the reading and writing ability of users so that accidental or unscrupulous transactions are minimized.</li>
+</ul>
+<p>For CADWR, ever since we switched over to hosting the parcels control sheet on a database instead of in a csv file, the occurrences of rows being dropped from the table dropped dramatically, and workflow is no longer interrupted due to the control sheet needing to be reset.</p>
+<p>Kyle converted the script from the first session to download data directly into a database hosted on his machine, so that anyone who wants to view the covid data doesn’t have to download all the csv files onto their personal machines. You do need to be connected to the VPN to access the database, however.</p>
+<p>Additionally, I demoed a small example using the simple features library (<code>sf</code>) in R, which is an excellent tool for reading shapefiles and executing geospatial operations such as <strong>intersects</strong>, <strong>unions</strong>, and <strong>buffers</strong>. I showed a mostly trivial example in which we just plotted the U.S. cases, but we frequently use the functionality of <code>sf</code> in our various projects at work.</p>
+<p><img src="/post/session5/summary_files/figure-html/session-2-1.png" width="672" /></p>
+</div>
+<div id="session-3-mapping-covid-19-cases-in-oregon" class="section level2">
+<h2><a href="https://bioanalytics-cvo-quantumspatial.netlify.app/2020/04/27/mapping-covid-19-cases-in-oregon/">Session 3: Mapping COVID-19 Cases in Oregon</a></h2>
+<p>In the third session, Kelsey showed us how to leverage the power of <code>ggplot2</code> to make beautiful and informative maps with our data. As with the first session, much of the code was dedicated to looking at the structure of the dataset and wrangling it into a form that was suitable for the point and heatmaps that she wanted to make. The most basic map created was that of a heatmap showing all of the cases reported up to about May 1st.</p>
+<p><img src="/post/session5/summary_files/figure-html/session-3-plots1-1.png" width="672" /></p>
+<p>However, looking at changes over time is often more illuminating. To plot change in confirmed cases/deaths/recoveries over time, she broke the dataset into 10-day intervals over which the data were aggregated. This way, we can see whether cases are increasing or decreasing over time, as well as the locations of those changes.</p>
+<p><img src="/post/session5/summary_files/figure-html/session-3-plots2-1.png" width="672" /><img src="/post/session5/summary_files/figure-html/session-3-plots2-2.png" width="672" /><img src="/post/session5/summary_files/figure-html/session-3-plots2-3.png" width="672" /><img src="/post/session5/summary_files/figure-html/session-3-plots2-4.png" width="672" /></p>
+<p>There is a bunch to unpack in this session, so I highly recommend you <a href="https://bioanalytics-cvo-quantumspatial.netlify.app/2020/04/27/mapping-covid-19-cases-in-oregon/"><em>read the blogpost, download the code, and try running it yourself</em></a> As always, please reach out to me if you have questions on getting your environment set up, running the code, or anything else! :)</p>
+</div>
+<div id="session-4-generating-a-predictive-model-of-covid-19-cases" class="section level2">
+<h2>Session 4: Generating a Predictive Model of COVID-19 Cases</h2>
+<p>Kyle and Michael did some excellent statistical modeling of the dataset. Unfortunately I don’t have the code for that yet, so the blogpost for that is still incoming.
+However, I do have some links for you to check out on the different types of modeling techniques that were covered in that session:</p>
+<ul>
+<li><a href="http://r-statistics.co/Linear-Regression.html"><strong>Linear Regression</strong></a></li>
+<li><a href="https://towardsdatascience.com/random-forest-in-r-f66adf80ec9"><strong>Random Forest</strong></a> (what we use in CADWR!)</li>
+<li><strong>Deep Learning Models</strong>
+<ul>
+<li><a href="https://keras.rstudio.com/"><strong>Sequential Model using the R interface to Keras</strong></a></li>
+<li><a href="https://towardsdatascience.com/understanding-semantic-segmentation-with-unet-6be4f42d4b47"><strong>UNET Modeling</strong></a> (not used in the session, but it’s what we are using to replace the random forest framework for CalWater)</li>
+</ul></li>
+</ul>
+</div>
+<div id="section" class="section level2">
+<h2></h2>
 </div>

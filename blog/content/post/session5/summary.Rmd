@@ -8,7 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(message = FALSE)
-knitr::opts_chunk$set(warning = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
 ```
 
 ## So What's It All Been About?
@@ -44,19 +44,45 @@ For CADWR, ever since we switched over to hosting the parcels control sheet on a
 
 Kyle converted the script from the first session to download data directly into a database hosted on his machine, so that anyone who wants to view the covid data doesn't have to download all the csv files onto their personal machines.  You do need to be connected to the VPN to access the database, however.
 
-Additionally, I demoed a small example using the simple features library (`sf`) in R, which is an excellent tool for reading shapefiles and executing geospatial operations such as **intersects**, **unions**, and **buffers**.
-```{r session-2, include=FALSE}
-# TODO
+Additionally, I demoed a small example using the simple features library (`sf`) in R, which is an excellent tool for reading shapefiles and executing geospatial operations such as **intersects**, **unions**, and **buffers**.  I showed a mostly trivial example in which we just plotted the U.S. cases, but we frequently use the functionality of `sf` in our various projects at work.
+
+```{r session-2, echo=FALSE}
+source(file.path(git.path,'Code/COVID19-Data-Exploration/scripts/R/session2/sf_example_simple.R'))
+
+plot(us_data.sf['confirmed'], extent=bound)
 ```
 
 ## [Session 3: Mapping COVID-19 Cases in Oregon](https://bioanalytics-cvo-quantumspatial.netlify.app/2020/04/27/mapping-covid-19-cases-in-oregon/)
-In the third session, Kelsey showed us how to leverage the power of `ggplot2` to make beautiful and informative maps with our data.  As with the first session, much of the code was dedicated to looking at the structure of the dataset and wrangling it into a form that was suitable for the point and heatmaps that she wanted to make.  
+In the third session, Kelsey showed us how to leverage the power of `ggplot2` to make beautiful and informative maps with our data.  As with the first session, much of the code was dedicated to looking at the structure of the dataset and wrangling it into a form that was suitable for the point and heatmaps that she wanted to make.  The most basic map created was that of a heatmap showing all of the cases reported up to about May 1st.
 
-Since the goal was to plot change in confirmed cases/deaths/recoveries over time, she broke the dataset into 10-day intervals that served as the periods over which we plotted and observed change.
+```{r session-3, results='hide', fig.keep='none',echo=FALSE}
+source(file.path(git.path,'Code/COVID19-Data-Exploration/scripts/R/session3/covid_heat_map.R'))
+```
 
-There is a bunch to unpack in this session, so I highly recommend you [*read the blogpost, download the code, and try running it yourself*](https://bioanalytics-cvo-quantumspatial.netlify.app/2020/04/27/mapping-covid-19-cases-in-oregon/)  As always, please reach out to me (Zach) if you have questions on getting your environment set up, how to run the code, or anything else :)!
+```{r session-3-plots1, echo=FALSE}
+print(COVID.map)
+```
 
-## Session 4: Modeling the dataset
-TODO
+However, looking at changes over time is often more illuminating.  To plot change in confirmed cases/deaths/recoveries over time, she broke the dataset into 10-day intervals over which the data were aggregated.  This way, we can see whether cases are increasing or decreasing over time, as well as the locations of those changes.
+
+```{r session-3-plots2, echo=FALSE}
+print(COVID.heat.map)
+print(COVID.point.map)
+print(confirmed.heat.map)
+print(confirmed.point.map)
+
+```
+
+There is a bunch to unpack in this session, so I highly recommend you [*read the blogpost, download the code, and try running it yourself*](https://bioanalytics-cvo-quantumspatial.netlify.app/2020/04/27/mapping-covid-19-cases-in-oregon/)  As always, please reach out to me if you have questions on getting your environment set up, running the code, or anything else! :)
+
+## Session 4: Generating a Predictive Model of COVID-19 Cases
+Kyle and Michael did some excellent statistical modeling of the dataset.  Unfortunately I don't have the code for that yet, so the blogpost for that is still incoming.
+However, I do have some links for you to check out on the different types of modeling techniques that were covered in that session:
+
+* [**Linear Regression**](http://r-statistics.co/Linear-Regression.html)
+* [**Random Forest**](https://towardsdatascience.com/random-forest-in-r-f66adf80ec9) (what we use in CADWR!)
+* **Deep Learning Models**
+    + [**Sequential Model using the R interface to Keras**](https://keras.rstudio.com/)
+    + [**UNET Modeling**](https://towardsdatascience.com/understanding-semantic-segmentation-with-unet-6be4f42d4b47) (not used in the session, but it's what we are using to replace the random forest framework for CalWater)
 
 ##
