@@ -6,10 +6,20 @@
     <description>Recent content on Bio-Team Development</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 10 Apr 2020 14:34:51 -0700</lastBuildDate>
+    <lastBuildDate>Mon, 01 Jun 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Bringing It All Together</title>
+      <link>/2020/06/01/bringing-it-all-together/</link>
+      <pubDate>Mon, 01 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/06/01/bringing-it-all-together/</guid>
+      <description>So What’s It All Been About? We’ve done a lot over the past 4 training sessions, so let’s review what we’ve done. I’ll briefly summarize what we’ve done, and then will generate for us a tidy little Rmarkdown report in which we can see how far we have come.
+ Session 1: Data Download and Sanitization In the first session, we pulled data from the John’s Hopkins database and generated plots of the number of reported cases, deaths, and recoveries for a particular country of interest.</description>
+    </item>
     
     <item>
       <title>Mapping COVID-19 Cases in Oregon</title>
@@ -17,9 +27,9 @@
       <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/04/27/mapping-covid-19-cases-in-oregon/</guid>
-      <description>Session OverviewThis week, Kelsey spent some time mapping the COVID-19 cases in Oregon and generated some plots forus. She already has provided some most illustrative documentation for her code, so I will simplyattempt to augment what she has already done.
+      <description>Session Overview This week, Kelsey spent some time mapping the COVID-19 cases in Oregon and generated some plots for us. She already has provided some most illustrative documentation for her code, so I will simply attempt to augment what she has already done.
 In this post, we will be covering the following subjects:
-Subsetting the full dataset to obtain only the Oregon casesDividing the Oregon data into 10-day intervals for analysisGenerating a 2-dimensional density plot (heatmap) of the confirmed cases in OregonAs always, if you’d like to download the code and run it yourself, check it out on github.</description>
+ Subsetting the full dataset to obtain only the Oregon cases Dividing the Oregon data into 10-day intervals for analysis Generating a 2-dimensional density plot (heatmap) of the confirmed cases in Oregon  As always, if you’d like to download the code and run it yourself, check it out on github.</description>
     </item>
     
     <item>
@@ -28,8 +38,8 @@ In this post, we will be covering the following subjects:
       <pubDate>Mon, 13 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/04/13/an-introduction-to-databases/</guid>
-      <description>Session OverviewThis week as part of the series, Kyle introduced us to some basic database managementby moving the csv data that we dowloaded from the JHU CSSE databaseto a local PostgresSQL instance on his machine and demoing some simple commands. The mainupdates to the code in the session were:
-Instead of downloading every csv from the John’s Hopkins database every time werun the script, only the most recent csv files (i.</description>
+      <description>Session Overview This week as part of the series, Kyle introduced us to some basic database management by moving the csv data that we dowloaded from the JHU CSSE database to a local PostgresSQL instance on his machine and demoing some simple commands. The main updates to the code in the session were:
+ Instead of downloading every csv from the John’s Hopkins database every time we run the script, only the most recent csv files (i.</description>
     </item>
     
     <item>
@@ -47,8 +57,8 @@ In this post, we will be covering the following subjects:
       <pubDate>Mon, 30 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/03/30/data-download-and-sanitation-and-our-first-plot/</guid>
-      <description>March 30, 2020Hello, and welcome to a summary of the first training session for bio-group technicaldevelopment! This is an Rmarkdown document that will walk you through what wedid in the first session on March 30, 2020. Here we will download the data from theJHU CSSE database and plot thereported confirmed cases, deaths, and recoveries for a country of interestsince January 22, 2020.
-LibrariesAt the top of any script we write, first we include all the libraries used in thisanalysis.</description>
+      <description>March 30, 2020 Hello, and welcome to a summary of the first training session for bio-group technical development! This is an Rmarkdown document that will walk you through what we did in the first session on March 30, 2020. Here we will download the data from the JHU CSSE database and plot the reported confirmed cases, deaths, and recoveries for a country of interest since January 22, 2020.
+Libraries At the top of any script we write, first we include all the libraries used in this analysis.</description>
     </item>
     
     <item>
@@ -57,8 +67,8 @@ LibrariesAt the top of any script we write, first we include all the libraries 
       <pubDate>Mon, 30 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/03/30/welcome-to-the-bio-group-development-series/</guid>
-      <description>Welcome!Hello everyone, and welcome to the website for the Bio-Group Development Series! Here wewill publish blog posts related to the various Monday-evening trainings as wellas resources for you to further delve into to the topics covered. In this firstset of trainings, we are looking at some data on the spread of COVID-19 virus, asexplained below.
-COVID-19 DatasetWith the myriad statistics of the novel coronavirus pervading most media outlets,we opted to examine the data ourselves to obtain a clearer understanding of thespread of the disease.</description>
+      <description>Welcome! Hello everyone, and welcome to the website for the Bio-Group Development Series! Here we will publish blog posts related to the various Monday-evening trainings as well as resources for you to further delve into to the topics covered. In this first set of trainings, we are looking at some data on the spread of COVID-19 virus, as explained below.
+ COVID-19 Dataset With the myriad statistics of the novel coronavirus pervading most media outlets, we opted to examine the data ourselves to obtain a clearer understanding of the spread of the disease.</description>
     </item>
     
   </channel>

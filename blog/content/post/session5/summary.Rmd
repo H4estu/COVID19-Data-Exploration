@@ -1,0 +1,62 @@
+---
+title: "Bringing It All Together"
+author: "Zach"
+date: "2020-06-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = TRUE)
+```
+
+## So What's It All Been About?
+We've done a lot over the past 4 training sessions, so let's review what we've done.  I'll briefly summarize what we've done, and then will generate for us a tidy little Rmarkdown report in which we can see how far we have come.  Links to the original blog posts for each session are linked to in the title of each section.
+
+## [Session 1: Data Download and Sanitization](https://bioanalytics-cvo-quantumspatial.netlify.app/2020/03/30/data-download-and-sanitation-and-our-first-plot/)
+In the first session, we pulled data from the [**John's Hopkins database**](https://github.com/CSSEGISandData/COVID-19) and generated plots of the number of reported cases, deaths, and recoveries for a particular country of interest.
+
+```{r session-1, echo=FALSE}
+git.path <- Sys.getenv('HOME')
+source(file.path(git.path,'Code/COVID19-Data-Exploration/scripts/R/session1/parse_daily_csvs.R'))
+
+country_cases.dt$Total_Deaths <- cumsum(country_cases.dt$Deaths)
+country_cases.dt$Total_Recovered <- cumsum(country_cases.dt$Recovered)
+melted.dt <- melt(country_cases.dt[,-c('Recovered','Total_Recovered','Total_Deaths')], id.vars='Last_Update', variable.name = 'Cases', 
+                  value.name='Number.Reported')
+ggplot(melted.dt, aes(x=Last_Update, y=Number.Reported, color=Cases)) +
+    geom_point() + 
+    geom_line()
+
+```
+
+To do this, we had to do a some manipulation of the original data to get them into a format suitable for our purposes.  This is a common hallmark of any project with data that is to be analyzed -- the initial pipeline down which the data are processed can be just as important as the end product.  The main projects in that we work on, CADWR and CalWater, both have automated ingestion pipelines that build out the projects' folder structures as well as perform quality checks on the data as they come in.  These were made possible by Herculean efforts on the parts of Aron, Kelsey, and Kyle!
+
+## [Session 2: Introduction to Databases and a Simple GIS Example using the `sf` Library](https://bioanalytics-cvo-quantumspatial.netlify.app/2020/04/13/an-introduction-to-databases/)
+In The second session, Kyle introduced us to the basics of databases and why they are preferable to storing everything in text files (e.g. comma-separated values, or csv, files) on disk.  Major beneifts include enhanced: 
+
+* Usability: data can be easily managed using a command language known as SQL (Structured Query Language) 
+* Reliability: transactions with the database are guaranteed to wholly succeed or fail via adherence to a set of standards ([ACID compliance](https://database.guide/what-is-acid-in-databases/)), preventing fragments of data being lost 
+* Security: permissions can be set to limit the reading and writing ability of users so that accidental or unscrupulous transactions are minimized.
+
+For CADWR, ever since we switched over to hosting the parcels control sheet on a database instead of in a csv file, the occurrences of rows being dropped from the table dropped dramatically, and workflow is no longer interrupted due to the control sheet needing to be reset.  
+
+Kyle converted the script from the first session to download data directly into a database hosted on his machine, so that anyone who wants to view the covid data doesn't have to download all the csv files onto their personal machines.  You do need to be connected to the VPN to access the database, however.
+
+Additionally, I demoed a small example using the simple features library (`sf`) in R, which is an excellent tool for reading shapefiles and executing geospatial operations such as **intersects**, **unions**, and **buffers**.
+```{r session-2, include=FALSE}
+# TODO
+```
+
+## [Session 3: Mapping COVID-19 Cases in Oregon](https://bioanalytics-cvo-quantumspatial.netlify.app/2020/04/27/mapping-covid-19-cases-in-oregon/)
+In the third session, Kelsey showed us how to leverage the power of `ggplot2` to make beautiful and informative maps with our data.  As with the first session, much of the code was dedicated to looking at the structure of the dataset and wrangling it into a form that was suitable for the point and heatmaps that she wanted to make.  
+
+Since the goal was to plot change in confirmed cases/deaths/recoveries over time, she broke the dataset into 10-day intervals that served as the periods over which we plotted and observed change.
+
+There is a bunch to unpack in this session, so I highly recommend you [*read the blogpost, download the code, and try running it yourself*](https://bioanalytics-cvo-quantumspatial.netlify.app/2020/04/27/mapping-covid-19-cases-in-oregon/)  As always, please reach out to me (Zach) if you have questions on getting your environment set up, how to run the code, or anything else :)!
+
+## Session 4: Modeling the dataset
+TODO
+
+##

@@ -14,7 +14,7 @@ knitr::opts_chunk$set(warning = FALSE)
 ## Session Overview
 This week as part of the series, Kyle introduced us to some basic database management
 by moving the csv data that we dowloaded from the [JHU CSSE database](https://github.com/CSSEGISandData/COVID-19) 
-to a local PostgresSQL instance on his machine and demoing some simple commands.  The main 
+to a local PostgreSQL instance on his machine and demoing some simple commands.  The main 
 updates to the code in the session were:
 
 * Instead of downloading every csv from the John's Hopkins database every time we

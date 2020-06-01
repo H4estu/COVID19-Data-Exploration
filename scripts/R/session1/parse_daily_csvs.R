@@ -15,7 +15,7 @@ library(dplyr)
 library(ggplot2)
 
 # Choose country to look at
-country.switch <- 'France'
+country.switch <- 'US'
 
 # Set paths 
 git.path <- Sys.getenv('HOME')  # Where the base COVID19-Data-Exploration folder lives.
@@ -72,14 +72,16 @@ data.dt[data.dt$Deaths%>%is.na, 'Deaths'] <- 0
 data.dt[data.dt$Confirmed%>%is.na, 'Confirmed'] <- 0
 
 
-country_cases.dt <- data.dt[data.dt$Country_Region==country.switch,] %>% 
+country_cases.dt <- data.dt[data.dt$Country_Region==country.switch & 
+                                !is.na(data.dt$Admin2),] %>% 
     group_by(Last_Update) %>% 
     summarize(Recovered=max(Recovered),Deaths=max(Deaths)) %>% 
     data.table
 
 # Make separate data table for confirmed, since it can be an order of magnitude
 # higher than recovered/death reports.
-country_confirmed.dt <- data.dt[data.dt$Country_Region==country.switch,] %>% 
+country_confirmed.dt <- data.dt[data.dt$Country_Region==country.switch & 
+                                !is.na(data.dt$Admin2),] %>% 
     group_by(Last_Update) %>% 
     summarize(Confirmed=max(Confirmed)) %>% data.table
 
