@@ -21,6 +21,16 @@
     </item>
     
     <item>
+      <title>Generating Predictive Models of COVID-19 Cases</title>
+      <link>/2020/05/11/generating-predictive-models-of-covid-19-cases/</link>
+      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/05/11/generating-predictive-models-of-covid-19-cases/</guid>
+      <description>To view and download the code and run it yourself, head on over to the GitHub site
+library(data.table)library(sf)library(RPostgreSQL)library(magrittr)library(randomForest)library(Metrics)library(ggplot2)library(keras)library(tensorflow)# devtools::install_github(&amp;quot;rstudio/keras&amp;quot;)git.path &amp;lt;- Sys.getenv(&amp;#39;HOME&amp;#39;) # Where the base COVID19-Data-Exploration folder lives.##---------------------------------------------------------------## Read In Data and Munge --##---------------------------------------------------------------# read in and munge Michael&amp;#39;s dataad_col_names &amp;lt;- c(&amp;#39;State&amp;#39;, &amp;#39;pop_dense&amp;#39;, &amp;#39;sh_date&amp;#39;)ad &amp;lt;- fread(file.path(git.path,&amp;quot;Code/COVID19-Data-Exploration/data/Pop_Density_By_State.csv&amp;quot;))ad &amp;lt;- ad[,c(&amp;#39;State:&amp;#39;, &amp;#39;Pop Density per square mile&amp;#39;, &amp;#39;Stay at home order date enacted:&amp;#39;)]colnames(ad) &amp;lt;- ad_col_namesad$sh_date &amp;lt;- format(as.</description>
+    </item>
+    
+    <item>
       <title>Mapping COVID-19 Cases in Oregon</title>
       <link>/2020/04/27/mapping-covid-19-cases-in-oregon/</link>
       <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>

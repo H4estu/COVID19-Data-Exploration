@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.70.0" />
+
+
+<title>Generating Predictive Models of COVID-19 Cases - Bio-Team Development</title>
+<meta property="og:title" content="Generating Predictive Models of COVID-19 Cases - Bio-Team Development">
+
+
+  <link href='/QSI_NV5_logo.png' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/QSI_NV5_logo.png"
+         width="315"
+         height="128"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/H4estu/COVID19-Data-Exploration">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/QuantumSpatial">Twitter</a></li>
+    
+    <li><a href="https://quantumspatial.com">Website</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">3 min read</span>
+    
+
+    <h1 class="article-title">Generating Predictive Models of COVID-19 Cases</h1>
+
+    
+    <span class="article-date">2020-05-11</span>
+    
+
+    <div class="article-content">
+      
+
+
+<p>To view and download the code and run it yourself, head on over to the <a href="https://github.com/H4estu/COVID19-Data-Exploration/blob/dev/scripts/R/session4/modeling_basics.R">GitHub site</a></p>
+<div id="section" class="section level2">
+<h2></h2>
+<pre class="r"><code>library(data.table)
+library(sf)
+library(RPostgreSQL)
+library(magrittr)
+library(randomForest)
+library(Metrics)
+library(ggplot2)
+library(keras)
+library(tensorflow)
+# devtools::install_github(&quot;rstudio/keras&quot;)
+
+git.path &lt;- Sys.getenv(&#39;HOME&#39;)  # Where the base COVID19-Data-Exploration folder lives.
+
+##---------------------------------------------------------------
+## Read In Data and Munge                                      --
+##---------------------------------------------------------------
+
+# read in and munge Michael&#39;s data
+ad_col_names &lt;- c(&#39;State&#39;, &#39;pop_dense&#39;, &#39;sh_date&#39;)
+ad &lt;- fread(file.path(git.path,&quot;Code/COVID19-Data-Exploration/data/Pop_Density_By_State.csv&quot;))
+ad &lt;- ad[,c(&#39;State:&#39;, &#39;Pop Density per square mile&#39;, &#39;Stay at home order date enacted:&#39;)]
+colnames(ad) &lt;- ad_col_names
+ad$sh_date &lt;- format(as.Date(ad$sh_date, &quot;%m/%d/%y&quot;), &quot;20%y-%m-%d&quot;)
+
+# -------- Access the COVID-19 Database --------- #
+source(file.path(git.path,&#39;Code/config_files/db_config.R&#39;))
+con &lt;- db_connect.fn()
+report_data.dt &lt;- dbGetQuery(con, &#39;SELECT * FROM covid_data.report_data&#39;) %&gt;% data.table
+dbDisconnect(con)  
+# ----------------------------------------------- #
+
+report_data &lt;- na.omit(report_data.dt, c(&#39;confirmed&#39;, &#39;deaths&#39;, &#39;province_state&#39;, &#39;country_region&#39;))
+
+# munge data to get data into the correct format to be a time series
+us_data.dt &lt;- report_data[which(report_data$country_region == &#39;US&#39;),]
+setkey(us_data.dt, &#39;province_state&#39;, &#39;last_update&#39;)
+suppressMessages(us_data_sum.dt&lt;-us_data.dt[,list(confirmed=sum(confirmed), deaths=sum(deaths), recovered=sum(recovered)),by=key(us_data.dt)])
+us_data_sum.dt$id &lt;- 1:nrow(us_data_sum.dt)
+us_data_sum.dt &lt;- merge(us_data_sum.dt, ad[,c(&#39;State&#39;, &#39;pop_dense&#39;, &#39;sh_date&#39;)],
+                        by.x=&#39;province_state&#39;, by.y=&#39;State&#39;)
+
+# split data by state and then remove states that don&#39;t have enough valid data
+us_data.split.dt &lt;- split(us_data_sum.dt, by=&#39;province_state&#39;)
+us_data.split.dt &lt;- lapply(us_data.split.dt, function(x){if(nrow(x) &gt; 9){return(x)}})
+us_data.split.dt &lt;- us_data.split.dt[lengths(us_data.split.dt) != 0]
+
+
+# convert long form into wide form time series
+column.names &lt;- c(&#39;province_state&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;6&#39; ,&#39;7&#39; ,&#39;8&#39;, &#39;9&#39;, &#39;10&#39;)
+x &lt;- us_data.split.dt[[1]]
+y &lt;- 1
+us_time_series.dt &lt;- lapply(us_data.split.dt, function(x){
+  print(x$province_state %&gt;% unique)
+  time.chunks &lt;- lapply(1:(nrow(x)-17), function(y){
+    wide.confirmed.data &lt;- dcast(x[y:(y+9),], province_state~id, value.var=&#39;confirmed&#39;)
+    colnames(wide.confirmed.data) &lt;- column.names
+    wide.confirmed.data$pop_dense &lt;- x[y:(y+9),]$pop_dense %&gt;% unique
+    if (ad[which(ad$&#39;State&#39; == x[y:(y+9),]$province_state  %&gt;% unique),]$sh_date %&gt;% as.Date &gt;  
+        x[(y+9),]$last_update %&gt;% as.Date){
+      wide.confirmed.data$stay_home &lt;- 1
+    }else{
+      wide.confirmed.data$stay_home &lt;- 0
+    }
+    wide.confirmed.data$deaths &lt;- x[(y+9):(y+9+7),]$deaths %&gt;% sum
+    return(wide.confirmed.data)
+  }) %&gt;% do.call(rbind, .)
+  return(time.chunks)
+}) %&gt;% rbindlist(.)
+us_time_series.dt &lt;- us_time_series.dt[sample(nrow(us_time_series.dt)),]
+
+x_train &lt;- us_time_series.dt[1:1368,-c(&#39;province_state&#39;, &#39;deaths&#39;)]
+y_train &lt;- us_time_series.dt[1:1368,]$deaths
+
+x_test &lt;- us_time_series.dt[1369:nrow(us_time_series.dt),-c(&#39;province_state&#39;, &#39;deaths&#39;)]
+y_test &lt;- us_time_series.dt[1369:nrow(us_time_series.dt),]$deaths
+
+
+##---------------------------------------------------------------
+## Linear Regression Model                                     --
+##---------------------------------------------------------------
+
+linear_data_train &lt;- data.table(confirmed=x_train[,1:10] %&gt;% rowSums, deaths=y_train)
+linear_data_test &lt;- data.table(confirmed=x_test[,1:10] %&gt;% rowSums, deaths=y_test)
+
+linear_model &lt;- lm(deaths~confirmed, data=linear_data_train)
+lm_predicts &lt;- predict(linear_model, linear_data_test[,&#39;confirmed&#39;]) %&gt;% as.vector
+
+rmse(linear_data_test$deaths, lm_predicts)
+plot(linear_data_test$deaths)
+plot(lm_predicts)
+
+WTH_predicts &lt;- (linear_model$coefficients[2] * linear_data_test[,]$confirmed)
+
+rmse(linear_data_test$deaths, WTH_predicts %&gt;% as.vector)
+plot(linear_data_test$deaths)
+plot(WTH_predicts)
+
+plot(us_time_series.dt$deaths)
+
+##---------------------------------------------------------------
+## Random  Forest                                              --
+##---------------------------------------------------------------
+
+model &lt;- randomForest(x_train, y_train, do.trace = TRUE)
+rf_predicts &lt;- predict(model, x_test) %&gt;% as.vector
+
+rmse(rf_predicts, y_test)
+
+plot(rf_predicts)
+plot(y_test)
+
+##---------------------------------------------------------------
+## LSTM Model using Keras                                      --
+##---------------------------------------------------------------
+
+X_train = array(x_train %&gt;% as.matrix, dim=c(nrow(x_train), 10,1))
+X_test = array(x_test %&gt;% as.matrix, dim=c(nrow(x_test), 10,1))
+
+model = keras_model_sequential() %&gt;%   
+  layer_lstm(units=128, input_shape=c(10, 1), activation=&quot;relu&quot;) %&gt;%  
+  layer_dense(units=64, activation = &quot;relu&quot;) %&gt;%  
+  layer_dense(units=32) %&gt;%  
+  layer_dense(units=1, activation = &quot;linear&quot;)
+
+model %&gt;% compile(loss = &#39;mse&#39;,
+                  optimizer = &#39;adam&#39;,
+                  metrics = list(&quot;mean_absolute_error&quot;)
+)
+
+model %&gt;% summary
+
+model %&gt;% fit(X_train, y_train, epochs=50, batch_size=32, shuffle = FALSE)
+lstm_pred = model %&gt;% predict(X_test)
+plot(lstm_pred)
+plot(y_test)
+rmse(lstm_pred, y_test)
+
+##---------------------------------------------------------------
+## Plots                                                       --
+##---------------------------------------------------------------
+
+predict_data.dt &lt;- data.table(y_value=y_test, rf_predicts=rf_predicts, lstm_pred=lstm_pred%&gt;%as.vector, 
+                              lm_pred=lm_predicts, wth_pred=WTH_predicts)
+
+ggplot(predict_data.dt, aes(y_value, y=rf_predicts, color=&quot;Random Forest&quot;)) + 
+  geom_point()+
+  geom_point(data=predict_data.dt, aes(y_value, y=lstm_pred, color=&quot;LSTM&quot;))
+
+
+ggplot(predict_data.dt, aes(y_value, y=rf_predicts, color=&quot;Random Forest&quot;)) + 
+  geom_point()+
+  geom_point(data=predict_data.dt, aes(y_value, y=lstm_pred, color=&quot;LSTM&quot;))+
+  xlim(0,1000)+
+  ylim(0,1000)
+
+ggplot(predict_data.dt, aes(y_value, y=rf_predicts, color=&quot;Random Forest&quot;)) + 
+  geom_point()+
+  geom_point(data=predict_data.dt, aes(y_value, y=lstm_pred, color=&quot;LSTM&quot;))+
+  geom_point(data=predict_data.dt, aes(y_value, y=lm_pred, color=&quot;LM&quot;))+
+  xlim(0,1000)+
+  ylim(-1000,1000)
+
+ggplot(predict_data.dt, aes(y_value, y=rf_predicts, color=&quot;Random Forest&quot;)) + 
+  geom_point()+
+  geom_point(data=predict_data.dt, aes(y_value, y=lstm_pred, color=&quot;LSTM&quot;))+
+  geom_point(data=predict_data.dt, aes(y_value, y=lm_pred, color=&quot;LM&quot;))+
+  geom_point(data=predict_data.dt, aes(y_value, y=wth_pred, color=&quot;WTH&quot;))+
+  xlim(0,1000)+
+  ylim(0,1000)</code></pre>
+</div>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+

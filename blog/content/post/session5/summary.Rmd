@@ -75,14 +75,18 @@ print(confirmed.point.map)
 
 There is a bunch to unpack in this session, so I highly recommend you [*read the blogpost, download the code, and try running it yourself*](https://bioanalytics-cvo-quantumspatial.netlify.app/2020/04/27/mapping-covid-19-cases-in-oregon/)  As always, please reach out to me if you have questions on getting your environment set up, running the code, or anything else! :)
 
-## Session 4: Generating Predictive Models of COVID-19 Cases
-Kyle and Michael did some excellent statistical modeling of the dataset.  Unfortunately I don't have the code for that yet, so the blogpost for that is still incoming.
-However, I do have some links for you to check out on the different types of modeling techniques that were covered in that session:
+## [Session 4: Generating Predictive Models of COVID-19 Cases](https://bioanalytics-cvo-quantumspatial.netlify.app/2020/05/11/Generating-Predictive-Models-of-COVID-19-Cases/)
+Kyle and Michael did some excellent statistical modeling of the dataset.  The blogpost for that session is still underway, so check back for more updates soon!  The link to the github page with the full code that you can download and try out yourself is in the post, so head over there if you want to check that out.  In the meantime, I do have some links for you to check out on the different types of modeling techniques that were covered in that session:
 
 * [**Linear Regression**](http://r-statistics.co/Linear-Regression.html)
 * [**Random Forest**](https://towardsdatascience.com/random-forest-in-r-f66adf80ec9) (what we use in CADWR!)
-* **Deep Learning Models**
-    + [**Sequential Model using the R interface to Keras**](https://keras.rstudio.com/)
+* **Deep Learning Modeling Frameworks**
+    + [**An introduction to the R interface to Keras**](https://keras.rstudio.com/)
+    + [**Long-Short-Term Memory Models (LSTMs)**](https://towardsdatascience.com/understanding-lstm-and-its-quick-implementation-in-keras-for-sentiment-analysis-af410fd85b47) -- This is the deep learning framework that Kyle used in the session.
+        - [And another link, since the topic is complex](http://colah.github.io/posts/2015-08-Understanding-LSTMs/)
     + [**UNET Modeling**](https://towardsdatascience.com/understanding-semantic-segmentation-with-unet-6be4f42d4b47) (not used in the session, but it's what we are using to replace the random forest framework for CalWater)
-
-##
+    
+Kyle and Michael showcased 3 different ways to generate a predicitve model of COVID-19
+```{r session-4, results='hide', fig.keep='none',echo=FALSE, eval=FALSE}
+source(file.path(git.path,'Code/COVID19-Data-Exploration/scripts/R/session4/modeling-basics.R'))
+```
