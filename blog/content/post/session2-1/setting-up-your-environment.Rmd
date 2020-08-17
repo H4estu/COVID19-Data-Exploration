@@ -1,0 +1,58 @@
+---
+title: "Welcome to Arc 2 - Programmatic Geospatial Analysis"
+author: "Zach"
+date: "2020-08-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## We're Back -- and Interactive!
+Welcome to our second round of Bio-Group trainings.  In this series, we will expand our
+GIS toolkit with the introduction of scripting and automation to our workflows.  TO:FINISH
+
+
+## A Brief introduction to the R Programming Language
+**R** is an open-source language designed for, among other things, statistical computing.  It is
+easy to download on your computer and immediately begin running code.  Many of the projects
+at work (e.g. CADWR, CalWater) rely heavily on tools written in R to ingest, process, and QC
+data in an automated fashion.
+
+R has a number of handy extensions written for it, greatly extending the feature set of the 
+language.  Some packages, such as RMarkdown, allow for automated report generation, converting For example, these blogs and this site are written entirely in R!  
+
+[Learn more about R here](https://www.r-project.org/).
+
+**RStudio** is an integrated development environment (IDE) specifically designed to enhance 
+software development in R.  Perhaps most useful is the console window, which runs a 
+read-eval-print loop (REPL) that immediately reads any code you give to it, evaluates it, and
+returns the results to you.  This is immensely helpful for understanding line-by-line what
+a script is doing.  Additionally, it can be quite helpful when debugging your code!
+
+[Learn more about RStudio here](https://docs.rstudio.com/).
+
+
+
+
+
+
+***
+
+## Download Links
+
+* Download [**R**](https://ftp.osuosl.org/pub/cran/)
+
+
+* Download [**RStudio**](https://rstudio.com/products/rstudio/download/#download)
+
+
+***
+
+1. Choose vector layer
+
+2. Write script to do:
+ - Buffer
+ - Dissolve
+ - Intersect.

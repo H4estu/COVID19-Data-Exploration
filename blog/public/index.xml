@@ -12,8 +12,16 @@
     
     
     <item>
-<<<<<<< HEAD
-=======
+      <title>Welcome to Arc 2 - Programmatic Geospatial Analysis</title>
+      <link>/2020/08/17/welcome-to-arc-2-programmatic-geospatial-analysis/</link>
+      <pubDate>Mon, 17 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/08/17/welcome-to-arc-2-programmatic-geospatial-analysis/</guid>
+      <description>We’re Back – and Interactive!Welcome to our second round of Bio-Group trainings. In this series, we will expand ourGIS toolkit with the introduction of scripting and automation to our workflows. TO:FINISH
+A Brief introduction to the R Programming LanguageR is an open-source language designed for, among other things, statistical computing. It iseasy to download on your computer and immediately begin running code. Many of the projectsat work (e.</description>
+    </item>
+    
+    <item>
       <title>Bringing It All Together</title>
       <link>/2020/06/01/bringing-it-all-together/</link>
       <pubDate>Mon, 01 Jun 2020 00:00:00 +0000</pubDate>
@@ -33,7 +41,6 @@
     </item>
     
     <item>
->>>>>>> 2350afaf2e2aa949a7721bdff93f44013cf33e48
       <title>Mapping COVID-19 Cases in Oregon</title>
       <link>/2020/04/27/mapping-covid-19-cases-in-oregon/</link>
       <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
@@ -50,11 +57,7 @@ In this post, we will be covering the following subjects:
       <pubDate>Mon, 13 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/04/13/an-introduction-to-databases/</guid>
-<<<<<<< HEAD
-      <description>Session OverviewThis week as part of the series, Kyle introduced us to some basic database managementby moving the csv data that we dowloaded from the JHU CSSE databaseto a local PostgresSQL instance on his machine and demoing some simple commands. The mainupdates to the code in the session were:
-=======
-      <description>Session OverviewThis week as part of the series, Kyle introduced us to some basic database managementby moving the csv data that we dowloaded from the JHU CSSE databaseto a local PostgreSQL instance on his machine and demoing some simple commands. The mainupdates to the code in the session were:
->>>>>>> 2350afaf2e2aa949a7721bdff93f44013cf33e48
+      <description>Session OverviewThis week as part of the series, Kyle introduced us to some basic database managementby moving the csv data that we dowloaded from the JHU CSSE database to a local PostgresSQL instance onhis machine and demoing some simple commands. The main updates to the code in thesession were:
 Instead of downloading every csv from the John’s Hopkins database every time werun the script, only the most recent csv files (i.</description>
     </item>
     

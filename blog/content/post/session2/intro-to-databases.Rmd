@@ -13,18 +13,19 @@ knitr::opts_chunk$set(warning = FALSE)
 
 ## Session Overview
 This week as part of the series, Kyle introduced us to some basic database management
-by moving the csv data that we dowloaded from the [JHU CSSE database](https://github.com/CSSEGISandData/COVID-19) 
-<<<<<<< HEAD
-to a local PostgresSQL instance on his machine and demoing some simple commands.  The main 
-=======
-to a local PostgreSQL instance on his machine and demoing some simple commands.  The main 
->>>>>>> 2350afaf2e2aa949a7721bdff93f44013cf33e48
-updates to the code in the session were:
+by moving the csv data that we dowloaded from the [JHU CSSE database](https://github.com/CSSEGISandData/COVID-19) to a local PostgresSQL instance on 
+his machine and demoing some simple commands.  The main  updates to the code in the 
+session were:
 
 * Instead of downloading every csv from the John's Hopkins database every time we
 run the script, only the most recent csv files (i.e. the ones missing from the `data/` directory) are downloaded, and they are automatically inserted into the database hosted on Kyle's work computer ([*insert_report_data.R*](https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/insert_report_data.R)).
+
+
 * A dummy dataset for folks to test out SQL commands ([*simple_database_queries.R*](https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/simple_database_queries.R)).
+
+
 * A basic example of generating a map of the COVID-19 dataset using the `sf` package in R ([*sf_example_simple.R*](https://github.com/H4estu/COVID19-Data-Exploration/blob/master/scripts/R/session2/sf_example_simple.R)).
+
 
 Check out the [scripts in our GitHub repository](https://github.com/H4estu/COVID19-Data-Exploration/tree/Rmarkdown/scripts/R/session2)
 to see everything we did.  

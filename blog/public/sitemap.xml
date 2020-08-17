@@ -3,19 +3,17 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-<<<<<<< HEAD
-    <loc>/2020/04/27/mapping-covid-19-cases-in-oregon/</loc>
-    <lastmod>2020-04-27T00:00:00+00:00</lastmod>
-=======
-    <loc>/2020/06/01/bringing-it-all-together/</loc>
-    <lastmod>2020-06-01T00:00:00+00:00</lastmod>
->>>>>>> 2350afaf2e2aa949a7721bdff93f44013cf33e48
+    <loc>/post/</loc>
+    <lastmod>2020-08-17T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/</loc>
-<<<<<<< HEAD
-=======
+    <loc>/2020/08/17/welcome-to-arc-2-programmatic-geospatial-analysis/</loc>
+    <lastmod>2020-08-17T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/06/01/bringing-it-all-together/</loc>
     <lastmod>2020-06-01T00:00:00+00:00</lastmod>
   </url>
   
@@ -26,7 +24,6 @@
   
   <url>
     <loc>/2020/04/27/mapping-covid-19-cases-in-oregon/</loc>
->>>>>>> 2350afaf2e2aa949a7721bdff93f44013cf33e48
     <lastmod>2020-04-27T00:00:00+00:00</lastmod>
   </url>
   

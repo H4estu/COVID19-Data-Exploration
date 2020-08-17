@@ -1,0 +1,233 @@
+---
+title: "Data Download and Sanitation (and our first plot!)"
+author: "Zach"
+date: "2020-03-30"
+output: html_document
+---
+
+
+
+<div id="march-30-2020" class="section level1">
+<h1>March 30, 2020</h1>
+<p>Hello, and welcome to a summary of the first training session for bio-group technical
+development! This is an Rmarkdown document that will walk you through what we
+did in the first session on March 30, 2020. Here we will download the data from the
+<a href="https://github.com/CSSEGISandData/COVID-19"><em>JHU CSSE database</em></a> and plot the
+reported confirmed cases, deaths, and recoveries for a country of interest
+since January 22, 2020.</p>
+<div id="libraries" class="section level2">
+<h2>Libraries</h2>
+<p>At the top of any script we write, first we include all the libraries used in this
+analysis. These “libraries” are packages of code that we import to our script
+so we may use some of their handy features. For example, the <code>xml2</code> library allows
+us to download a webpage and extract all of the text from it in just a few simple
+lines of code! A few commonly used libraries include <code>data.table</code>, <code>dplyr</code>, and
+<code>magrittr</code>, all of which we will go into later.</p>
+<pre class="r"><code>library(magrittr)
+library(xml2)
+library(lubridate)
+library(data.table)
+library(dplyr)
+library(ggplot2)</code></pre>
+</div>
+<div id="set-paths" class="section level2">
+<h2>Set paths</h2>
+<p>This line is purely procedural. Here we tell R in a platform-agnostic way where
+to put on your computer the downloaded csv data as well as the R scripts. In
+other words, R makes a guess at where your home directory is, regardless of whether
+you are using Windows, MacOS, or Linux.</p>
+<pre class="r"><code>git.path &lt;- Sys.getenv(&#39;HOME&#39;)  # Where the base COVID19-Data-Exploration folder lives.</code></pre>
+</div>
+<div id="fetching-the-csv-data-from-github-and-importing-it-to-the-database" class="section level2">
+<h2>Fetching the CSV data from Github and importing it to the database</h2>
+<p>Here’s where we start to get our hands dirty. In the 3 code chunks below, we
+first download the Github webpage that has all of the csv files in it and extract
+the text Second, we look through all of that text for any
+string of characters in the date format MM-DD-YYYY (since that is the naming
+convention for all of the csv files) and make a list of those dates.<br />
+Finally, we use the list of dates (corresponding to the names of the csv files)
+to download the any new data into the PostgreSQL database hosted by Kyle.</p>
+<pre class="r"><code># Pull in list of daily data. 
+xml.path &lt;- &#39;https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_daily_reports&#39;
+report.file &lt;- download_html(xml.path)
+html.read &lt;- read_html(report.file)
+csv.list &lt;- xml_text(html.read) %&gt;% strsplit(split=&#39;\\n&#39;) %&gt;% unlist</code></pre>
+<pre class="r"><code>dates.list &lt;- lapply(csv.list, function(x) {
+    if (grepl(pattern=&#39;.csv&#39;, x, fixed=TRUE)) {
+        regex &lt;- regexpr(&#39;\\d{2}-\\d{2}-\\d{4}.csv&#39;, x)
+        return(substr(x, start=regex[[1]], stop=regex[[1]]+attr(regex, &#39;match.length&#39;)))
+    }
+}) 
+dates.list[sapply(dates.list, is.null)] &lt;- NULL
+dates.list &lt;- dates.list %&gt;% tstrsplit(split=&#39;.csv&#39;, keep=1) %&gt;% unlist</code></pre>
+<pre class="r"><code># Get list of dates we do have
+source(file.path(git.path, &#39;Code/config_files/db_config.R&#39;))
+con &lt;- db_connect.fn()
+curr_dates.list &lt;- dbGetQuery(con, &#39;SELECT last_update FROM covid_data.report_data&#39;) %&gt;%
+     group_by(last_update) %&gt;% summarize
+dbDisconnect(con)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code># Force dates to be in mm/dd/yyyy to comply with JHU CSSE date formatting.  This code
+# makes me very sad :(
+curr_dates.list$last_update &lt;- curr_dates.list$last_update %&gt;% year %&gt;% 
+    paste0(curr_dates.list$last_update,&#39;-&#39;,.) %&gt;% sub(&#39;\\d{4}-&#39;,&quot;&quot;,.)
+
+# Insert data for dates we don&#39;t have into database
+missing_dates &lt;- dates.list[!(dates.list %in% curr_dates.list$last_update)]
+if (length(missing_dates) &gt; 0) {
+    source(file.path(git.path, 
+                     &#39;Code/COVID19-Data-Exploration/scripts/R/session2/insert_report_data.R&#39;),
+           local=T)
+    con &lt;- db_connect.fn()
+    tryCatch({
+        insert_report_data(con, missing_dates)  
+    }, 
+    error = function(e) {
+        print(&#39;ERROR: Database not updated!&#39;)
+        print(e)
+    })
+    dbDisconnect(con)
+} else {
+    print(&#39;No new data to download!&#39;)
+}</code></pre>
+<pre><code>## [1] &quot;No new data to download!&quot;</code></pre>
+</div>
+<div id="querying-and-filtering-data" class="section level2">
+<h2>Querying and Filtering Data</h2>
+<p>Now that we have filled in the database with the most up-to-date information, let’s query
+the some data to work with. We can do this by simply requesting the data from the
+database using Structured Query Language (SQL) commands. SQL is the lingua franca of
+databases; we will go deeper into this topic in session 2.</p>
+<p>R, as well as many other languages, offer ways to interface with SQL that allow you to use
+R idioms to invoke SQL commands. the <code>dbGetQuery</code> function (imported from <code>RPostgreSQL</code>) is a command specific to R that allows us to ask the database to send us the data (via a
+SQL invocation) and return it to us in a form usable by R. Here, we ask for the 3 most
+recent months of data from the database, and then combine all of the data into one handy
+<code>data.table</code>.</p>
+<pre class="r"><code>library(RPostgreSQL)
+
+# Acquire COVID data from database.  Default to most recent 3-month period
+con &lt;- db_connect.fn()
+end.date &lt;- Sys.Date()
+start.date &lt;- end.date - 90  # 90-days ~ 3 months
+q1 &lt;- &quot;SELECT * FROM covid_data.report_data&quot;
+q2 &lt;- paste0(&quot;WHERE last_update &gt;= &#39;&quot;, start.date, &quot;&#39;::DATE AND last_update &lt;= &#39;&quot;, 
+             end.date,&quot;&#39;::DATE&quot;)
+data.dt &lt;- dbGetQuery(con, paste(q1, q2)) %&gt;% data.table
+dbDisconnect(con)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>data.dt</code></pre>
+<pre><code>##             id province_state     country_region last_update confirmed deaths
+##      1: 202115                            Angola  2020-05-24        61      4
+##      2: 205686                           Ukraine  2020-05-25     20986    617
+##      3: 209018                            Latvia  2020-05-26      1049     22
+##      4: 209019                           Lebanon  2020-05-26      1119     26
+##      5: 209020                           Lesotho  2020-05-26         2      0
+##     ---                                                                      
+## 341912: 520673                West Bank and Gaza  2020-08-16     16153    108
+## 341913: 520674                    Western Sahara  2020-08-16        10      1
+## 341914: 520675                             Yemen  2020-08-16      1858    528
+## 341915: 520676                            Zambia  2020-08-16      9186    260
+## 341916: 520677                          Zimbabwe  2020-08-16      5176    130
+##         recovered  latitude longitude fips admin2 active       combined_key
+##      1:        18 -11.20270  17.87390   NA            39             Angola
+##      2:      7108  48.37940  31.16560   NA         13261            Ukraine
+##      3:       712  56.87960  24.60320   NA           315             Latvia
+##      4:       688  33.85470  35.86230   NA           405            Lebanon
+##      5:         0 -29.60999  28.23361   NA             2            Lesotho
+##     ---                                                                    
+## 341912:      9388  31.95220  35.23320   NA          6657 West Bank and Gaza
+## 341913:         8  24.21550 -12.88580   NA             1     Western Sahara
+## 341914:      1013  15.55273  48.51639   NA           317              Yemen
+## 341915:      8065 -13.13390  27.84933   NA           861             Zambia
+## 341916:      2047 -19.01544  29.15486   NA          2999           Zimbabwe</code></pre>
+<p>Finally, after all that work, we have our data downloaded, cleaned, and in a format
+suitable for analysis. We can begin thinking of questions that we want to
+answer using the data. This is an early step in the exploratory data analysis phase.
+A first probing question may be, “For our country of interest, what are the number
+of confirmed cases, reported deaths, and reported recoveries?”</p>
+<p>To answer this question, we are going to make a few simple plots to visually see
+how the number of confirmed COVID-19 cases, the number of reported deaths due to
+the virus, and the number of reported cases have changed over time.</p>
+<div id="replace-nas-with-zeros" class="section level3">
+<h3>Replace NA’s with zeros</h3>
+<p>It is often convenient to replace <code>NA</code> values in a dataset with zeros, since <code>NA</code>
+values in R (as well as other programming languages) can have weird or behavior
+that may be different from what you are expecting (e.g. summing values in
+column that has an <code>NA</code> in it will return <code>NA</code>).
+### Select Country
+Choose country to look at. We are using Italy here because it is more easy
+to verify our results with those reported by the CSSE data dashboard.</p>
+<pre class="r"><code>country.switch &lt;- &#39;US&#39;</code></pre>
+</div>
+<div id="filter-by-country-group-by-day-and-summarize" class="section level3">
+<h3>Filter by country, group by day, and summarize</h3>
+<p>This is our first step where we really start to manipulate the data to answer our
+question of interest. All of the organizing we did to our data before this was so
+that we can use these powerful filtering, grouping and summarizing tools to select
+the chunks of our data that we are interested in.</p>
+<p>These 4 lines make heavy use of <code>%&gt;%</code>, which is the piping operator from the
+<code>magrittr</code> library. This conveniently allows us to string together multiple
+operations in a single step. In the 4 lines below we:</p>
+<ol style="list-style-type: decimal">
+<li><code>SELECT</code> from the dataset only the rows that match our country of interest.</li>
+<li><code>GROUP</code> the selected rows by their date (to get a chronological timeline of
+the number of cases in each category).</li>
+<li><code>SUMMARIZE</code> all the observations (i.e. rows) for each date into a single value.
+The sum of all obeservations for all cases of a particular type will reflect
+the number of reported confirmed cases/deaths/recoveries for that day.</li>
+</ol>
+<pre class="r"><code># Summarize country data and plot by case type
+country_cases.dt &lt;- data.dt[data.dt$country_region==country.switch,] %&gt;% 
+    group_by(last_update) %&gt;% 
+    summarize(confirmed=sum(confirmed),
+              deaths=sum(deaths), 
+              recovered=sum(recovered)) %&gt;% data.table</code></pre>
+</div>
+</div>
+<div id="our-first-plots" class="section level2">
+<h2>Our First Plots</h2>
+<p>Finally, let us plot the data! Here we make use of the <code>ggplot2</code> library to
+visualize our data. We’ll split the data by case type (<em>confirmed</em>, <em>deaths</em>, and
+<em>recovered</em>) and plot each separately. For all plots, the y-axis reflects the number of
+reported cases for each type, and the x-axis shows the increase over time.</p>
+<pre class="r"><code># Confirmed
+melted.dt &lt;- melt(country_cases.dt, id.vars=&#39;last_update&#39;, variable.name = &#39;cases&#39;, 
+                  value.name=&#39;number.reported&#39;)
+ggplot(melted.dt, aes(x=last_update, y=number.reported, color=cases)) +
+    geom_point() + 
+    geom_line() +
+    ggtitle(paste(&quot;Total Confirmed Cases in&quot;, country.switch))</code></pre>
+<p><img src="/post/session1/data_download_sanitation_files/figure-html/plot-cases-1.png" width="672" /></p>
+<pre class="r"><code># Deaths
+melted.dt &lt;- melt(country_cases.dt[,c(&#39;last_update&#39;,&#39;deaths&#39;)], 
+                  id.vars=&#39;last_update&#39;, variable.name = &#39;cases&#39;, 
+                  value.name=&#39;number.reported&#39;)
+ggplot(melted.dt, aes(x=last_update, y=number.reported, color=cases)) +
+    geom_point() + 
+    geom_line() +
+    ggtitle(paste(&quot;Total Deaths in&quot;, country.switch))</code></pre>
+<p><img src="/post/session1/data_download_sanitation_files/figure-html/plot-cases-2.png" width="672" /></p>
+<pre class="r"><code># Recovered
+melted.dt &lt;- melt(country_cases.dt[,c(&#39;last_update&#39;,&#39;recovered&#39;)], 
+                  id.vars=&#39;last_update&#39;, variable.name = &#39;cases&#39;, 
+                  value.name=&#39;number.reported&#39;)
+ggplot(melted.dt, aes(x=last_update, y=number.reported, color=cases)) +
+    geom_point() + 
+    geom_line() +
+    ggtitle(paste(&quot;Total Recovered Cases in&quot;, country.switch))</code></pre>
+<p><img src="/post/session1/data_download_sanitation_files/figure-html/plot-cases-3.png" width="672" /></p>
+<hr />
+<p>These plots may seem simple, but beneath them lies a wealth of information. What
+questions do you have after viewing them?</p>
+</div>
+</div>
+<div id="further-reading" class="section level1">
+<h1>Further reading</h1>
+<p>See the following links for information on the following topics:</p>
+<ul>
+<li><p><a href="https://cran.r-project.org/web/packages/data.table/vignettes/datatable-intro.html"><em>Data tables</em></a> in R</p></li>
+<li><p><a href="https://r4ds.had.co.nz/"><em>R for Data Science</em></a>. An excellent resource for those
+who want to delve into other data sets on their own, learning data analysis from
+the ground up in R. Accessible to all levels of experience!</p></li>
+</ul>
+</div>

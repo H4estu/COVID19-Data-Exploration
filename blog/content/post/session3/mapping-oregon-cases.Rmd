@@ -77,10 +77,10 @@ oregon_cases.dt <- full.dt[which((grepl(', OR', full.dt$province_state) |
                                   ) & !is.na(full.dt$latitude)
                                  ), ] %>%
   group_by(last_update) %>%
-  summarize(Recovered=max(recovered), 
-            Deaths=max(deaths), 
-            Confirmed=max(confirmed), 
-            Active=max(active)
+  summarize(Recovered=sum(recovered), 
+            Deaths=sum(deaths), 
+            Confirmed=sum(confirmed), 
+            Active=sum(active)
   ) %>% data.table
 
 melted.dt <- melt(oregon_cases.dt, id.vars='last_update', variable.name = 'Cases', 
@@ -174,7 +174,7 @@ subset.expanded <- subset[rep(1:nrow(subset), subset$deaths)]
 tail(subset.expanded, 20)
 
 # Next we are going to summarize our data for the point based heat map that we are going to do.
-subset.summary<- subset[,.(deaths=max(deaths)), by=c('period','latitude', 'longitude')]
+subset.summary<- subset[,.(deaths=sum(deaths)), by=c('period','latitude', 'longitude')]
 print(subset.summary)
 ```
 
@@ -210,7 +210,7 @@ print(COVID.map)
 COVID.heat.map <- COVID.map + facet_wrap(~period)
 # print(COVID.heat.map)
 
-# Create new map with geom_point layer that uses the max deaths by location and period to dictate  
+# Create new map with geom_point layer that uses the total deaths by location and period to dictate  
 # size (heat map with no interpolation + represents all values)
 COVID.point.map <- p + geom_point(data=subset.summary, aes(x=longitude, y=latitude, size=deaths, 
                                                            color=deaths), alpha = 0.7) +
@@ -241,7 +241,7 @@ The rest of the code is more or less replicating what we've done above for the `
 #Now for confirmed cases
 subset.c<-covid.OR[,c('confirmed','latitude', 'longitude', 'period')]
 subset.expanded.c <- subset.c[rep(1:nrow(subset.c), subset.c$confirmed)]
-subset.summary.c<- subset.c[,.(confirmed=max(confirmed)), by=c('period','latitude', 'longitude')]
+subset.summary.c<- subset.c[,.(confirmed=sum(confirmed)), by=c('period','latitude', 'longitude')]
 
 ## Plot a heat map layer: Polygons with fill colors based on
 ## relative frequency of events which we created by replicating rows by the number of events.
@@ -276,7 +276,7 @@ print(confirmed.point.map)
 #Now for active cases
 subset.a<-covid.OR[,c('active','latitude', 'longitude', 'period')]
 subset.expanded.a <- subset.a[rep(1:nrow(subset.a), subset.a$active)]
-subset.summary.a<- subset.a[,.(active=max(active)), by=c('period','latitude', 'longitude')]
+subset.summary.a<- subset.a[,.(active=sum(active)), by=c('period','latitude', 'longitude')]
 
 ## Plot a heat map layer: Polygons with fill colors based on
 ## relative frequency of events which we created by replicating rows by the number of events.
