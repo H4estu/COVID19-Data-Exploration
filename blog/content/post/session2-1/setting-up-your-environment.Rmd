@@ -74,6 +74,11 @@ This assignment will serve two purposes:  it will introduce us to some of R's me
 handling geospatial data, and it will help us identify any software issues that need 
 troubleshooting for folks before moving on with the training series.
 
+### You will need:
+* **A laptop with an internet connection**
+* **An inquisitive mind**
+* **Post-work beverage of choice**
+
 ### Part 1:  Visualizing Spatial Data
 
 * Get into groups
