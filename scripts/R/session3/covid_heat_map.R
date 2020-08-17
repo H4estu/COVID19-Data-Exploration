@@ -83,7 +83,7 @@ print(p)
 ## Plot a heat map layer: Polygons with fill colors based on
 ## relative frequency of events
 COVID.map <- p + stat_density2d(data=subset.expanded, aes(x=longitude, y=latitude, fill=..level.., alpha=..level..), geom="polygon")
-print(COVID.map)
+# print(COVID.map)
 
 # Remove legends and add title
 # Define the spectral colors to fill the density contours using the 'RColorBrewer' package
@@ -101,7 +101,7 @@ print(COVID.heat.map)
 # Create new map with geom_point layer that uses the max deaths by location and period to dictate size 
 # (heat map with no interpolation + represents all values)
 COVID.point.map <- p + geom_point(data=subset.summary, aes(x=longitude, y=latitude, size=deaths, color=deaths), alpha = 0.7) +
-  ggtitle("Oregon Covid-19 Deaths: Point") +
+  ggtitle("Oregon Covid-19 Deaths: Point Map") +
   scale_color_gradientn(colours=brewer.pal(7, "Reds")) + 
   facet_wrap(~period)
 print(COVID.point.map)
@@ -129,7 +129,7 @@ print(confirmed.heat.map)
 confirmed.point.map <-p +
   geom_point(data=subset.summary.c, aes(x=longitude, y=latitude, size=confirmed, color=confirmed),alpha = 0.7)+
   scale_color_gradientn(colours=brewer.pal(7, "Reds")) +
-  ggtitle("Oregon Confirmed Covid-19 Cases: Heat Map") +
+  ggtitle("Oregon Confirmed Covid-19 Cases: Point Map") +
   facet_wrap(~period)
 print(confirmed.point.map)
 # Plot both maps next to each other and compare using the gridExtra package
@@ -173,4 +173,4 @@ active <- grid.arrange(active.heat.map, active.point.map, ncol = 2)
 
 #Plot all maps together :)
 all_maps <- grid.arrange(deaths, confirmed, active, nrow = 3)
-ggsave(plot=all_maps, 'E:/KWatkins/Development_Meeting/covid_maps.jpeg', height = 11, width = 10)
+# ggsave(plot=all_maps, 'E:/KWatkins/Development_Meeting/covid_maps.jpeg', height = 11, width = 10)

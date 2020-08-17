@@ -12,6 +12,28 @@
     
     
     <item>
+<<<<<<< HEAD
+=======
+      <title>Bringing It All Together</title>
+      <link>/2020/06/01/bringing-it-all-together/</link>
+      <pubDate>Mon, 01 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/06/01/bringing-it-all-together/</guid>
+      <description>So What’s It All Been About?We’ve done a lot over the past 4 training sessions, so let’s review what we’ve done. I’ll briefly summarize what we’ve done, and in the process will generate for us a tidy little Rmarkdown report in which we can see how far we have come. Links to the original blog posts for each session are linked to in the title of each section, where you can view the full code and the breakdown of it.</description>
+    </item>
+    
+    <item>
+      <title>Generating Predictive Models of COVID-19 Cases</title>
+      <link>/2020/05/11/generating-predictive-models-of-covid-19-cases/</link>
+      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/05/11/generating-predictive-models-of-covid-19-cases/</guid>
+      <description>To view and download the code and run it yourself, head on over to the GitHub site
+library(data.table)library(sf)library(RPostgreSQL)library(magrittr)library(randomForest)library(Metrics)library(ggplot2)library(keras)library(tensorflow)# devtools::install_github(&amp;quot;rstudio/keras&amp;quot;)git.path &amp;lt;- Sys.getenv(&amp;#39;HOME&amp;#39;) # Where the base COVID19-Data-Exploration folder lives.##---------------------------------------------------------------## Read In Data and Munge --##---------------------------------------------------------------# read in and munge Michael&amp;#39;s dataad_col_names &amp;lt;- c(&amp;#39;State&amp;#39;, &amp;#39;pop_dense&amp;#39;, &amp;#39;sh_date&amp;#39;)ad &amp;lt;- fread(file.path(git.path,&amp;quot;Code/COVID19-Data-Exploration/data/Pop_Density_By_State.csv&amp;quot;))ad &amp;lt;- ad[,c(&amp;#39;State:&amp;#39;, &amp;#39;Pop Density per square mile&amp;#39;, &amp;#39;Stay at home order date enacted:&amp;#39;)]colnames(ad) &amp;lt;- ad_col_namesad$sh_date &amp;lt;- format(as.</description>
+    </item>
+    
+    <item>
+>>>>>>> 2350afaf2e2aa949a7721bdff93f44013cf33e48
       <title>Mapping COVID-19 Cases in Oregon</title>
       <link>/2020/04/27/mapping-covid-19-cases-in-oregon/</link>
       <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
@@ -28,7 +50,11 @@ In this post, we will be covering the following subjects:
       <pubDate>Mon, 13 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/04/13/an-introduction-to-databases/</guid>
+<<<<<<< HEAD
       <description>Session OverviewThis week as part of the series, Kyle introduced us to some basic database managementby moving the csv data that we dowloaded from the JHU CSSE databaseto a local PostgresSQL instance on his machine and demoing some simple commands. The mainupdates to the code in the session were:
+=======
+      <description>Session OverviewThis week as part of the series, Kyle introduced us to some basic database managementby moving the csv data that we dowloaded from the JHU CSSE databaseto a local PostgreSQL instance on his machine and demoing some simple commands. The mainupdates to the code in the session were:
+>>>>>>> 2350afaf2e2aa949a7721bdff93f44013cf33e48
 Instead of downloading every csv from the John’s Hopkins database every time werun the script, only the most recent csv files (i.</description>
     </item>
     

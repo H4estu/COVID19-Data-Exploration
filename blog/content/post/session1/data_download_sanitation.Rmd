@@ -8,6 +8,7 @@ output: html_document
 
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE)
+knitr::opts_chunk$set(warning = FALSE)
 ```
 
 # March 30, 2020
@@ -161,7 +162,7 @@ data.dt
 Choose country to look at.  We are using Italy here because it is more easy
 to verify our results with those reported by the CSSE data dashboard.
 ```{r country-switch}
-country.switch <- 'Italy'
+country.switch <- 'US'
 ```
 
 ### Filter by country, group by day, and summarize
@@ -224,7 +225,9 @@ melted.dt <- melt(country_cases.dt, id.vars='Last_Update', variable.name = 'Case
                   value.name='Number.Reported')
 ggplot(melted.dt, aes(x=Last_Update, y=Number.Reported, color=Cases)) +
     geom_point() + 
-    geom_line()
+    geom_line() 
+    # coord_cartesian() +
+    # ylim(c(0,150000))
 ```
 
 ***

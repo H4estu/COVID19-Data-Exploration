@@ -3,12 +3,30 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+<<<<<<< HEAD
     <loc>/2020/04/27/mapping-covid-19-cases-in-oregon/</loc>
     <lastmod>2020-04-27T00:00:00+00:00</lastmod>
+=======
+    <loc>/2020/06/01/bringing-it-all-together/</loc>
+    <lastmod>2020-06-01T00:00:00+00:00</lastmod>
+>>>>>>> 2350afaf2e2aa949a7721bdff93f44013cf33e48
   </url>
   
   <url>
     <loc>/post/</loc>
+<<<<<<< HEAD
+=======
+    <lastmod>2020-06-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/05/11/generating-predictive-models-of-covid-19-cases/</loc>
+    <lastmod>2020-05-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/04/27/mapping-covid-19-cases-in-oregon/</loc>
+>>>>>>> 2350afaf2e2aa949a7721bdff93f44013cf33e48
     <lastmod>2020-04-27T00:00:00+00:00</lastmod>
   </url>
   
