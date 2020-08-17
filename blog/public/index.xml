@@ -17,8 +17,8 @@
       <pubDate>Mon, 17 Aug 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/08/17/welcome-to-arc-2-programmatic-geospatial-analysis/</guid>
-      <description>We’re Back – and Interactive!Welcome to our second round of Bio-Group trainings. In this series, we will expand ourGIS toolkit with the introduction of scripting and automation to our workflows. TO:FINISH
-A Brief introduction to the R Programming LanguageR is an open-source language designed for, among other things, statistical computing. It iseasy to download on your computer and immediately begin running code. Many of the projectsat work (e.</description>
+      <description>We’re Back – and Interactive!Welcome to the second round of Bio-Group trainings. In this series, we will expand ourGIS and problem-solving toolkits by leveraging the power of computation. To this end,we will use the R programming language and some important associated geospatial packages.Let’s dive in!
+A Brief introduction to the R Programming LanguageSuccinctly, R is free software designed for statisticalcomputing.</description>
     </item>
     
     <item>

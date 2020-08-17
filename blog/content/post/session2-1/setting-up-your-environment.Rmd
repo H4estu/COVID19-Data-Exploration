@@ -10,49 +10,353 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## We're Back -- and Interactive!
-Welcome to our second round of Bio-Group trainings.  In this series, we will expand our
-GIS toolkit with the introduction of scripting and automation to our workflows.  TO:FINISH
+Welcome to the second round of Bio-Group trainings.  In this series, we will expand our
+GIS and problem-solving toolkits by leveraging the power of computation.  To this end, 
+we will use the R programming language and some important associated geospatial packages.
+Let's dive in!
 
 
 ## A Brief introduction to the R Programming Language
-**R** is an open-source language designed for, among other things, statistical computing.  It is
-easy to download on your computer and immediately begin running code.  Many of the projects
-at work (e.g. CADWR, CalWater) rely heavily on tools written in R to ingest, process, and QC
-data in an automated fashion.
+Succinctly, [**R**](https://www.r-project.org/) is free software designed for statistical 
+computing.  In the software
+world, *free* generally carries two separate meanings: free of cost, and free of copyright [^1].
+Conveniently for us, R is free in both senses of the word, meaning we can download it from
+the internet at no cost (other than the cost to maintain your internet connection), and we 
+are free to use the language to develop programs and to modify as we see fit.
+Being free of copyright is a major advantage R holds over other statistical software you may
+be familiar with, such as SPSS or Minitab.  These are example of non-free, proprietary 
+codes that require expensive licenses to use.  If you're curious to know more about the 
+history of the R language (and its predecessor, S), I've included a link at the bottom of 
+this post.
 
-R has a number of handy extensions written for it, greatly extending the feature set of the 
-language.  Some packages, such as RMarkdown, allow for automated report generation, converting For example, these blogs and this site are written entirely in R!  
+### What does this mean for us?
+Because of how versatile the language is, much of the workflows for CADWR and CalWater rely
+on tools written in R to ingest, process, analyze, and QC data our GIS data.    
 
-[Learn more about R here](https://www.r-project.org/).
-
-**RStudio** is an integrated development environment (IDE) specifically designed to enhance 
-software development in R.  Perhaps most useful is the console window, which runs a 
-read-eval-print loop (REPL) that immediately reads any code you give to it, evaluates it, and
-returns the results to you.  This is immensely helpful for understanding line-by-line what
-a script is doing.  Additionally, it can be quite helpful when debugging your code!
-
-[Learn more about RStudio here](https://docs.rstudio.com/).
-
+R has a number of handy extensions written for it, greatly extending the feature set of the
+language beyond just statistical analysis.  At work, we use R to execute geospatial 
+operations (`sf`), classify object-level data (`randomForest`) and even host the Work 
+Available webpage (`shiny`)!  In fact, all of the images and inline code that you have seen 
+throughout these trainings have been generated using `rmarkdown`, and this entire website 
+is automatically built and published using `blogdown`'s interface to the static website 
+generator [**Hugo**](https://gohugo.io/).
 
 
+### Can we get started now?
+We're almost there!  We need one more tool, which is an environment in which to write and 
+run our code.  [**RStudio**](https://rstudio.com/) will be our friend here.  RStudio is an 
+integrated development environment (IDE) specifically designed to enhance 
+software development in R.  It provides handy development tools such as code and 
+documentation completion, syntax highlighting, package management, linting, debugging, and
+much more.  
+
+Perhaps most useful is RStudio's support for direct code execution, which allows us to
+write a line of code in a script and immediately see the result in the console window.  In 
+programming terms, this is known as a read-eval-print loop (REPL) and is a common feature
+of interpreted programming languages.  Direct code exectuion is very helpful for 
+understanding line-by-line what a script is doing, and we will leverage this functionality
+quite often throughout these trainings.  As you may guess, it can be quite helpful when 
+debugging your code!
 
 
-
-***
+Alright, enough talk.  Let's download the software and run some code!
 
 ## Download Links
 
 * Download [**R**](https://ftp.osuosl.org/pub/cran/)
-
-
 * Download [**RStudio**](https://rstudio.com/products/rstudio/download/#download)
 
 
-***
+---
 
-1. Choose vector layer
+## Today's Assignment -- Looking at North Carolina County Data
+This assignment will serve two purposes:  it will introduce us to some of R's methods for
+handling geospatial data, and it will help us identify any software issues that need 
+troubleshooting for folks before moving on with the training series.
 
-2. Write script to do:
- - Buffer
- - Dissolve
- - Intersect.
+### Part 1:  Visualizing Spatial Data
+
+* Get into groups
+
+* Open RStudio
+
+* Open a new script via one of the two methods:
+    * Click on `File` > `New File` > `R Script`
+    * Press `ctrl`+`shift`+`N`
+    
+* **Type** (don't copy/paste!) the following into your script:  
+```{r babbys-first-pt1, eval=FALSE, warning=FALSE, message=FALSE}
+install.packages(c('magrittr',
+                   'data.table',
+                   'sf',
+                   'dplyr',
+                   'maptools',
+                   'mapview'))  # only needs to be run once
+
+# Import libraries to utilize their functions
+library(magrittr)   # pipe functions into one another ('%>%' symbol)
+library(data.table) # fast manipulation of data in table format (think Excel spreadsheets)
+library(dplyr)      # more data manipulation functions
+library(sf)         # geospatial functions
+library(maptools)   # contains our toy data set
+library(mapview)    # An alternative to plot() for plotting spatial data
+
+
+# Obtain file path of our toy dataset
+toy.data.file <- system.file('shapes/sids.shp', package="maptools")
+
+# Read in shapefile 
+nc.county.boundaries <- st_read(toy.data.file)
+
+nc.county.boundaries  # Look at full dataset
+nc.county.boundaries$AREA  # Look at the AREA column only
+
+# Visualize output
+plot(nc.county.boundaries)
+
+mapview(nc.county.boundaries)
+```
+One of the ways to develop your programming skills is to get the feel for typing code 
+yourself.  When possible, try typing out code instead of copying and pasting pre-canned 
+solutions.  Now let's run the code line-by-line and examine the output.  To run a single
+line, click anywhere on the line so that your blinking vertical pipe is on the line.  Then
+just hit `ctrl`+`enter`.
+
+**Don't forget to save your work frequently!**
+
+```{r babbys-first-pt1a, warning=FALSE, message=FALSE}
+# Import libraries to utilize their functions
+library(magrittr)   # pipe functions into one another ('%>%' symbol)
+library(data.table) # fast manipulation of data in table format (think Excel spreadsheets)
+library(dplyr)      # more data manipulation functions
+library(sf)         # geospatial functions
+library(maptools)   # contains our toy data set
+library(mapview)    # An alternative to plot() for plotting spatial data
+
+# Obtain file path of our toy dataset
+toy.data.file <- system.file('shapes/sids.shp', package="maptools")
+
+# Read in shapefile 
+nc.county.boundaries <- st_read(toy.data.file, quiet=TRUE)
+
+nc.county.boundaries  # Look at full dataset
+nc.county.boundaries$AREA  # Look at the AREA column only
+```
+
+As you can see, the variable `nc.county.boundaries` contains a table of information about
+the various counties in North Carolina.  Individual columns can be accessed with the 
+`$` operator via commands following the format: `variable$column_name`.  
+
+Notice that there is a column named `geometry`.  This is the column containing the spatial information necessary to view this dataset on a map.  So lets do that:
+
+```{r babbys-first-pt1b}
+# Visualize output
+plot(nc.county.boundaries)
+
+mapview(nc.county.boundaries)
+```
+
+1. Now consider the following questions:
+    a.  What are some differences and similarities between the map generated by `plot()`
+    vs. the map generated by `mapview()`?
+    
+    b.  For the map generated by `mapview()`, click on a shape.  What happens?
+    
+    c.  For the map generated by `mapview()`, click on a shape and count the number of 
+    attributes.  What do these attributes represent in the variable 
+    `nc.county.boundaries`?  With this information, what do you think the warning message 
+    generated by the `plot()` command means?
+    
+    d.  Which plotting method do you prefer, and why?
+    
+    e.  CHALLENGE: For the map generated by `plot()`, why do the colors for some of the 
+    fields look
+    more like a continuous gradient (e.g. `CNTY_`, `CNTY_ID`), while others look more
+    discrete, or separate (e.g. `NAME`, `FIPS`).  *HINT*: consider the *type* of variable
+    in those columns.
+
+---
+
+### Part 2:  Simple Geospatial Operations
+Now that we are comfortable visualizing our output, let's start manipulating the data
+and see what happens.  Choose which map visualization method you prefer 
+(`plot()` or `mapview()`), and replace the instances of `<plot_func>` in the code with 
+your choice. Type the following into your script, continuing from where you left
+off in part 1:
+
+```{r babbys-first-pt2, eval=FALSE}
+# Notice that the data do not come set with a coordinate reference system (CRS).
+# Leaflet, (the mapping framework used by mapview) requires CRS the to be 4326 to
+# geospatially reference the data.  So we will need to define a CRS and project our
+# data accordingly.
+st_crs(nc.county.boundaries)
+
+# Set the CRS
+st_crs(nc.county.boundaries) <- 4326
+
+# Project data to the new CRS  
+nc.county.boundaries <- st_transform(nc.county.boundaries, 4326)
+
+# Union all geometries together
+st_union(nc.county.boundaries) %>% mapview(col.regions='red')
+
+# Union all geometries together, then buffer by 0.1 arc degrees (final shape is larger than original)
+st_union(nc.county.boundaries) %>% st_buffer(0.1) %>% mapview(col.regions='blue')
+
+# Union all geometries together, then buffer by -0.1 arc degrees (final shape is smaller than original)
+st_union(nc.county.boundaries) %>% st_buffer(-0.1) %>% mapview(col.regions='green')
+
+# show effects of union and buffering on combined plot
+mapview(st_union(nc.county.boundaries) %>% st_buffer(0.1), col.regions='blue') +
+    mapview(nc.county.boundaries, col.regions='red') +
+    mapview(st_union(nc.county.boundaries) %>% st_buffer(-0.1), col.regions='green')
+
+# What does this do?
+nc.county.boundaries %>% group_by() %>% summarize
+```
+
+Notice that we are using the piping operator `%>%` from the library `magrittr`.  `%>%` 
+takes the variable on the left side of itself, and uses it as the first argument to the
+function on the right side of it.  This means, that:
+```{r, eval=FALSE}
+st_union(nc.county.boundaries) %>% st_buffer(0.1)
+```
+can also be written as:
+```{r, eval=FALSE}
+st_buffer(st_union(nc.county.boundaries), 0.1)
+```
+Another benefit of the `%>%` is that you can easily highlight sections of a line (i.e. 
+sections of your pipeline) and run them sequentially, clearling illustrating how the data
+are being transformed as they move through the pipeline.
+
+The functions prefixed with `st_` come from the `sf` library and
+carry out some common geospatial operations like buffering and unioning.  Let's alter
+the `nc.county.boundaries` dataset by running these commands and seeing what the resulting
+map looks like.
+
+```{r babbys-first-pt2-1, warning=FALSE, message=FALSE}
+# Notice that the data do not come set with a coordinate reference system (CRS).
+# Leaflet, (the mapping framework used by mapview) requires CRS the to be 4326 to
+# geospatially reference the data.  So we will need to define a CRS and project our
+# data appropriately.
+st_crs(nc.county.boundaries)
+
+# Set the CRS
+st_crs(nc.county.boundaries) <- 4326
+
+# Project data to the new CRS  
+nc.county.boundaries <- st_transform(nc.county.boundaries, 4326)
+
+# Union all geometries together
+st_union(nc.county.boundaries) %>% mapview(col.regions='red')
+
+# Union all geometries together, then buffer by 0.1 arc degrees (final shape is larger than original)
+st_union(nc.county.boundaries) %>% st_buffer(0.1) %>% mapview(col.regions='blue')
+
+# Union all geometries together, then buffer by -0.1 arc degrees (final shape is smaller than original)
+st_union(nc.county.boundaries) %>% st_buffer(-0.1) %>% mapview(col.regions='green')
+
+# show effects of union and buffering on combined plot
+mapview(st_union(nc.county.boundaries) %>% st_buffer(0.1), col.regions='blue') +
+    mapview(nc.county.boundaries, col.regions='red') +
+    mapview(st_union(nc.county.boundaries) %>% st_buffer(-0.1), col.regions='green')
+
+# What does this do?
+nc.county.boundaries %>% group_by() %>% summarize
+```
+
+2. Now consider the following questions:
+    a.  What geospatial operation is executed by the final line: 
+    `nc.county.boundaries %>% group_by() %>% summarize`?  To answer this, it may be 
+    helpful to plot the result.
+    b.  Read about how to get, set, and transform and set CRS's by executing `?st_crs`.
+    You can access help documentation for any function by prefixing the function name with
+    a `?`.
+    c.  Read up on the philosophy behind the `sf` package
+    [**here**](https://r-spatial.github.io/sf/articles/sf1.html).  Use 
+    `methods(class="sf")` to see more options for geospatial operations.  Try out a few
+    that we haven't covered here.
+    
+  
+### Wrap-Up  
+Here is what your final script might look like:
+```{r final-script-good-job-babby, eval=FALSE}
+
+# ---------------------------------------------------------------------------------------
+#  Part 1
+# ---------------------------------------------------------------------------------------
+install.packages(c('magrittr',
+                   'data.table',
+                   'sf',
+                   'dplyr',
+                   'maptools',
+                   'mapview'))  # only needs to be run once
+
+# Import libraries to utilize their functions
+library(magrittr)   # pipe functions into one another ('%>%' symbol)
+library(data.table) # fast manipulation of data in table format (think Excel spreadsheets)
+library(dplyr)      # more data manipulation functions
+library(sf)         # geospatial functions
+library(maptools)   # contains our toy data set
+library(mapview)    # An alternative to plot() for plotting spatial data
+
+
+# Obtain file path of our toy dataset
+toy.data.file <- system.file('shapes/sids.shp', package="maptools")
+
+# Read in shapefile 
+nc.county.boundaries <- st_read(toy.data.file)
+
+nc.county.boundaries  # Look at full dataset
+nc.county.boundaries$AREA  # Look at the AREA column only
+
+# Visualize output
+plot(nc.county.boundaries)
+
+mapview(nc.county.boundaries)
+
+
+# ---------------------------------------------------------------------------------------
+#  Part 2
+# ---------------------------------------------------------------------------------------
+# Notice that the data do not come set with a coordinate reference system (CRS).
+# Leaflet, (the mapping framework used by mapview) requires CRS the to be 4326 to
+# geospatially reference the data.  So we will need to define a CRS and project our
+# data appropriately.
+st_crs(nc.county.boundaries)
+
+# Set the CRS
+st_crs(nc.county.boundaries) <- 4326
+
+# Project data to the new CRS  
+nc.county.boundaries <- st_transform(nc.county.boundaries, 4326)
+
+# Union all geometries together
+st_union(nc.county.boundaries) %>% mapview(col.regions='red')
+
+# Union all geometries together, then buffer by 0.1 arc degrees (final shape is larger than original)
+st_union(nc.county.boundaries) %>% st_buffer(0.1) %>% mapview(col.regions='blue')
+
+# Union all geometries together, then buffer by -0.1 arc degrees (final shape is smaller than original)
+st_union(nc.county.boundaries) %>% st_buffer(-0.1) %>% mapview(col.regions='green')
+
+# show effects of union and buffering on combined plot
+mapview(st_union(nc.county.boundaries) %>% st_buffer(0.1), col.regions='blue') +
+    mapview(nc.county.boundaries, col.regions='red') +
+    mapview(st_union(nc.county.boundaries) %>% st_buffer(-0.1), col.regions='green')
+
+# What does this do?
+nc.county.boundaries %>% group_by() %>% summarize
+```
+    
+    
+---
+
+## Further Reading
+
+* [**History and Philosophy of R**](https://bookdown.org/rdpeng/rprogdatascience/history-and-overview-of-r.html).  This is part of a larger book on using data science with R, so check out the whole text if interested.
+* [**Main site for the R project**](https://www.r-project.org/).
+* [**RStudio docs**](https://docs.rstudio.com/).
+* [**A text on geographic data analysis with R**](https://geocompr.robinlovelace.net/index.html).  Assumes experience with R, which you now have!
+
+[^1]: More on [**free software and what that means**](https://www.fsf.org/).  Free software usually still has a copyright license, just one that is far less restrictive than non-free software.
