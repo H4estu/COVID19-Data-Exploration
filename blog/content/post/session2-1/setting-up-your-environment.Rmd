@@ -123,9 +123,11 @@ mapview(nc.county.boundaries)
 ```
 One of the ways to develop your programming skills is to get the feel for typing code 
 yourself.  When possible, type out the code instead of copying and pasting pre-canned 
-solutions.  Now let's run the code line-by-line and examine the output.  To run a single
-line, click anywhere on the line so that your blinking vertical pipe is on the line.  Then
-just hit `ctrl`+`enter`.
+solutions.  
+
+Now let's run the code line-by-line and examine the output.  To run a single
+line, click anywhere on the line so that your blinking vertical pipe is on the line.  
+Then just hit `ctrl`+`enter`.
 
 **Don't forget to save your work frequently!**
 
@@ -256,16 +258,20 @@ st_crs(nc.county.boundaries)
 # Set the CRS
 st_crs(nc.county.boundaries) <- 4326
 
-# Project data to the new CRS  
+# Here, the call to st_transform doesn't actually do anything.  I'm leaving it here
+# for now, so that in the future when this issue is fixed (i.e. the original CRS 
+# is found), we won't need to remember to add this line again.
 nc.county.boundaries <- st_transform(nc.county.boundaries, 4326)
 
 # Union all geometries together
 st_union(nc.county.boundaries) %>% mapview(col.regions='red')
 
-# Union all geometries together, then buffer by 0.1 arc degrees (final shape is larger than original)
+# Union all geometries together, then buffer by 0.1 arc degrees (final shape is larger 
+# than original)
 st_union(nc.county.boundaries) %>% st_buffer(0.1) %>% mapview(col.regions='blue')
 
-# Union all geometries together, then buffer by -0.1 arc degrees (final shape is smaller than original)
+# Union all geometries together, then buffer by -0.1 arc degrees (final shape is smaller 
+# than original)
 st_union(nc.county.boundaries) %>% st_buffer(-0.1) %>% mapview(col.regions='green')
 
 # show effects of union and buffering on combined plot
