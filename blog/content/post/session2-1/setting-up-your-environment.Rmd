@@ -288,7 +288,7 @@ nc.county.boundaries %>% group_by() %>% summarize
     `nc.county.boundaries %>% group_by() %>% summarize`?  To answer this, it may be 
     helpful to plot the result.
     
-    b.  Read about how to get, set, and transform and set CRS's by executing `?st_crs`.
+    b.  Read about how to get, set, and transform CRS's by executing `?st_crs`.
     You can access help documentation for any function by prefixing the function name with
     a `?`.
     
