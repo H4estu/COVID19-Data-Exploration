@@ -45,7 +45,7 @@
   <link rel="assets" href="https://github.githubassets.com/">
   
 
-  <meta name="request-id" content="E34A:961A:4062A6:59E90B:5F47EDC1" data-pjax-transient="true"/><meta name="html-safe-nonce" content="28f43863bdb499c5c7959c861392b93930da09a7" data-pjax-transient="true"/><meta name="visitor-payload" content="eyJyZWZlcnJlciI6IiIsInJlcXVlc3RfaWQiOiJFMzRBOjk2MUE6NDA2MkE2OjU5RTkwQjo1RjQ3RURDMSIsInZpc2l0b3JfaWQiOiI2MDk3NzM2MzYzNjE1NDQ4NTEzIiwicmVnaW9uX2VkZ2UiOiJzZWEiLCJyZWdpb25fcmVuZGVyIjoic2VhIn0=" data-pjax-transient="true"/><meta name="visitor-hmac" content="96e10aaf30e47b417bbbe44b387e4294f1e88405e7338ecf92a338f8f6ce3fbc" data-pjax-transient="true"/><meta name="cookie-consent-required" content="false" data-pjax-transient="true"/>
+  <meta name="request-id" content="E3B7:46AA:5120D:7534B:5F47F14B" data-pjax-transient="true"/><meta name="html-safe-nonce" content="ab6d9a0bebb8fb4ecc69d0becfdb2676212e8f69" data-pjax-transient="true"/><meta name="visitor-payload" content="eyJyZWZlcnJlciI6IiIsInJlcXVlc3RfaWQiOiJFM0I3OjQ2QUE6NTEyMEQ6NzUzNEI6NUY0N0YxNEIiLCJ2aXNpdG9yX2lkIjoiNTg1MzU4NjAzOTk4MTQ3MDAyNyIsInJlZ2lvbl9lZGdlIjoic2VhIiwicmVnaW9uX3JlbmRlciI6InNlYSJ9" data-pjax-transient="true"/><meta name="visitor-hmac" content="d1f623fcf0a264332d8bf54c4ae845d8dfb4d6dbab01adbe72686857f99736c1" data-pjax-transient="true"/><meta name="cookie-consent-required" content="false" data-pjax-transient="true"/>
 
     <meta name="hovercard-subject-tag" content="repository:238316428" data-pjax-transient>
 
@@ -294,7 +294,7 @@
           spellcheck="false"
           autocomplete="off"
           >
-          <input type="hidden" data-csrf="true" class="js-data-jump-to-suggestions-path-csrf" value="3WuhFyC3c9ohirE64F/9uUYvFymDykFrDo48pEUqdcAKAyxHZovnp2duLgTkNbkpJQNruBAdndYsBp50S1mH/w==" />
+          <input type="hidden" data-csrf="true" class="js-data-jump-to-suggestions-path-csrf" value="XdHWVUI51lwSwYckcZdvTkcq8OvjflFZLrFokFFa4UvRtlkkZkta2rUSJtxDag67ZPFoytUji85S6YmLYo/69Q==" />
           <input type="hidden" class="js-site-search-type-field" name="type" >
             <img src="https://github.githubassets.com/images/search-key-slash.svg" alt="" class="mr-2 header-search-key-slash">
 
@@ -523,7 +523,7 @@
       Star
 </a>
     <a class="social-count js-social-count" href="/CSSEGISandData/COVID-19/stargazers"
-      aria-label="23756 users starred this repository">
+      aria-label="23755 users starred this repository">
       23.8k
     </a>
 

@@ -194,7 +194,7 @@ reported cases for each type, and the x-axis shows the increase over time.
 
 ```{r plot-cases}
 
-# Confirmed
+# All cases
 melted.dt <- melt(country_cases.dt, id.vars='last_update', variable.name = 'cases', 
                   value.name='number.reported')
 ggplot(melted.dt, aes(x=last_update, y=number.reported, color=cases)) +
@@ -202,7 +202,7 @@ ggplot(melted.dt, aes(x=last_update, y=number.reported, color=cases)) +
     geom_line() +
     scale_y_continuous(trans='log10') +
     annotation_logticks() +
-    ggtitle(paste("Total Confirmed Cases in", country.switch))
+    ggtitle(paste("Total Cases in", country.switch, "By Type"))
 ```
 
 ***
