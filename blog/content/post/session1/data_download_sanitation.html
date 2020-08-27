@@ -117,29 +117,29 @@ dbDisconnect(con)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <pre class="r"><code>data.dt</code></pre>
 <pre><code>##             id province_state     country_region last_update confirmed deaths
-##      1: 202115                            Angola  2020-05-24        61      4
-##      2: 205686                           Ukraine  2020-05-25     20986    617
-##      3: 209018                            Latvia  2020-05-26      1049     22
-##      4: 209019                           Lebanon  2020-05-26      1119     26
-##      5: 209020                           Lesotho  2020-05-26         2      0
+##      1: 219336                           Grenada  2020-05-29        23      0
+##      2: 222969                            Zambia  2020-05-30      1057      7
+##      3: 226299        Unknown               Peru  2020-05-31         0      0
+##      4: 226300        Unknown              Spain  2020-05-31         0      0
+##      5: 229848                           Albania  2020-06-01      1137     33
 ##     ---                                                                      
-## 338605: 520673                West Bank and Gaza  2020-08-16     16153    108
-## 338606: 520674                    Western Sahara  2020-08-16        10      1
-## 338607: 520675                             Yemen  2020-08-16      1858    528
-## 338608: 520676                            Zambia  2020-08-16      9186    260
-## 338609: 520677                          Zimbabwe  2020-08-16      5176    130
+## 348181: 570437                West Bank and Gaza  2020-08-26     20155    137
+## 348182: 570438                    Western Sahara  2020-08-26        10      1
+## 348183: 570439                             Yemen  2020-08-26      1930    560
+## 348184: 570440                            Zambia  2020-08-26     11376    282
+## 348185: 570441                          Zimbabwe  2020-08-26      6251    179
 ##         recovered  latitude longitude fips admin2 active       combined_key
-##      1:        18 -11.20270  17.87390   NA            39             Angola
-##      2:      7108  48.37940  31.16560   NA         13261            Ukraine
-##      3:       712  56.87960  24.60320   NA           315             Latvia
-##      4:       688  33.85470  35.86230   NA           405            Lebanon
-##      5:         0 -29.60999  28.23361   NA             2            Lesotho
+##      1:        18  12.11650 -61.67900   NA             5            Grenada
+##      2:       779 -13.13390  27.84933   NA           271             Zambia
+##      3:     66447        NA        NA   NA        -66447      Unknown, Peru
+##      4:         0        NA        NA   NA             0     Unknown, Spain
+##      5:       872  41.15330  20.16830   NA           232            Albania
 ##     ---                                                                    
-## 338605:      9388  31.95220  35.23320   NA          6657 West Bank and Gaza
-## 338606:         8  24.21550 -12.88580   NA             1     Western Sahara
-## 338607:      1013  15.55273  48.51639   NA           317              Yemen
-## 338608:      8065 -13.13390  27.84933   NA           861             Zambia
-## 338609:      2047 -19.01544  29.15486   NA          2999           Zimbabwe</code></pre>
+## 348181:     13929  31.95220  35.23320   NA          6089 West Bank and Gaza
+## 348182:         8  24.21550 -12.88580   NA             1     Western Sahara
+## 348183:      1097  15.55273  48.51639   NA           273              Yemen
+## 348184:     10693 -13.13390  27.84933   NA           401             Zambia
+## 348185:      5001 -19.01544  29.15486   NA          1071           Zimbabwe</code></pre>
 <p>Finally, after all that work, we have our data downloaded, cleaned, and in a format
 suitable for analysis. We can begin thinking of questions that we want to
 answer using the data. This is an early step in the exploratory data analysis phase.
@@ -187,8 +187,9 @@ country_cases.dt &lt;- data.dt[data.dt$country_region==country.switch,] %&gt;%
 <div id="our-first-plots" class="section level2">
 <h2>Our First Plots</h2>
 <p>Finally, let us plot the data! Here we make use of the <code>ggplot2</code> library to
-visualize our data. We’ll split the data by case type (<em>confirmed</em>, <em>deaths</em>, and
-<em>recovered</em>) and plot each separately. For all plots, the y-axis reflects the number of
+visualize our data. We’ll split the data by case type (<code>confirmed</code>, <code>deaths</code>, and
+<code>recovered</code>) and plot each to the same axes. For visual clarity, we choose to
+log-transform our y-axis. The y-axis reflects the number of
 reported cases for each type, and the x-axis shows the increase over time.</p>
 <pre class="r"><code># Confirmed
 melted.dt &lt;- melt(country_cases.dt, id.vars=&#39;last_update&#39;, variable.name = &#39;cases&#39;, 
@@ -196,29 +197,13 @@ melted.dt &lt;- melt(country_cases.dt, id.vars=&#39;last_update&#39;, variable.n
 ggplot(melted.dt, aes(x=last_update, y=number.reported, color=cases)) +
     geom_point() + 
     geom_line() +
+    scale_y_continuous(trans=&#39;log10&#39;) +
+    annotation_logticks() +
     ggtitle(paste(&quot;Total Confirmed Cases in&quot;, country.switch))</code></pre>
 <p><img src="/post/session1/data_download_sanitation_files/figure-html/plot-cases-1.png" width="672" /></p>
-<pre class="r"><code># Deaths
-melted.dt &lt;- melt(country_cases.dt[,c(&#39;last_update&#39;,&#39;deaths&#39;)], 
-                  id.vars=&#39;last_update&#39;, variable.name = &#39;cases&#39;, 
-                  value.name=&#39;number.reported&#39;)
-ggplot(melted.dt, aes(x=last_update, y=number.reported, color=cases)) +
-    geom_point() + 
-    geom_line() +
-    ggtitle(paste(&quot;Total Deaths in&quot;, country.switch))</code></pre>
-<p><img src="/post/session1/data_download_sanitation_files/figure-html/plot-cases-2.png" width="672" /></p>
-<pre class="r"><code># Recovered
-melted.dt &lt;- melt(country_cases.dt[,c(&#39;last_update&#39;,&#39;recovered&#39;)], 
-                  id.vars=&#39;last_update&#39;, variable.name = &#39;cases&#39;, 
-                  value.name=&#39;number.reported&#39;)
-ggplot(melted.dt, aes(x=last_update, y=number.reported, color=cases)) +
-    geom_point() + 
-    geom_line() +
-    ggtitle(paste(&quot;Total Recovered Cases in&quot;, country.switch))</code></pre>
-<p><img src="/post/session1/data_download_sanitation_files/figure-html/plot-cases-3.png" width="672" /></p>
 <hr />
-<p>These plots may seem simple, but beneath them lies a wealth of information. What
-questions do you have after viewing them?</p>
+<p>This plot may seem simple, but beneath it lies a wealth of information. What
+questions do you have after viewing?</p>
 </div>
 </div>
 <div id="further-reading" class="section level1">

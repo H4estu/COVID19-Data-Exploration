@@ -187,42 +187,28 @@ country_cases.dt <- data.dt[data.dt$country_region==country.switch,] %>%
 
 ## Our First Plots
 Finally, let us plot the data!  Here we make use of the `ggplot2` library to
-visualize our data.  We'll split the data by case type (*confirmed*, *deaths*, and
-*recovered*) and plot each separately.  For all plots, the y-axis reflects the number of
+visualize our data.  We'll split the data by case type (`confirmed`, `deaths`, and
+`recovered`) and plot each to the same axes.  For visual clarity, we choose to
+log-transform our y-axis.  The y-axis reflects the number of
 reported cases for each type, and the x-axis shows the increase over time.
 
 ```{r plot-cases}
+
 # Confirmed
 melted.dt <- melt(country_cases.dt, id.vars='last_update', variable.name = 'cases', 
                   value.name='number.reported')
 ggplot(melted.dt, aes(x=last_update, y=number.reported, color=cases)) +
     geom_point() + 
     geom_line() +
+    scale_y_continuous(trans='log10') +
+    annotation_logticks() +
     ggtitle(paste("Total Confirmed Cases in", country.switch))
-
-# Deaths
-melted.dt <- melt(country_cases.dt[,c('last_update','deaths')], 
-                  id.vars='last_update', variable.name = 'cases', 
-                  value.name='number.reported')
-ggplot(melted.dt, aes(x=last_update, y=number.reported, color=cases)) +
-    geom_point() + 
-    geom_line() +
-    ggtitle(paste("Total Deaths in", country.switch))
-
-# Recovered
-melted.dt <- melt(country_cases.dt[,c('last_update','recovered')], 
-                  id.vars='last_update', variable.name = 'cases', 
-                  value.name='number.reported')
-ggplot(melted.dt, aes(x=last_update, y=number.reported, color=cases)) +
-    geom_point() + 
-    geom_line() +
-    ggtitle(paste("Total Recovered Cases in", country.switch))
 ```
 
 ***
 
-These plots may seem simple, but beneath them lies a wealth of information.  What
-questions do you have after viewing them?
+This plot may seem simple, but beneath it lies a wealth of information.  What
+questions do you have after viewing?
     
 
 # Further reading
