@@ -3,12 +3,17 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/post/</loc>
-    <lastmod>2020-08-17T00:00:00+00:00</lastmod>
+    <loc>/2020/08/31/2-2-assignment-1-review-and-coordinate-reference-systems/</loc>
+    <lastmod>2020-08-31T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/2020/08/17/welcome-to-arc-2-programmatic-geospatial-analysis/</loc>
+    <loc>/post/</loc>
+    <lastmod>2020-08-31T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/08/17/2-1-welcome-to-arc-2-programmatic-geospatial-analysis/</loc>
     <lastmod>2020-08-17T00:00:00+00:00</lastmod>
   </url>
   

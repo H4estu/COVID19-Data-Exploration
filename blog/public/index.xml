@@ -12,11 +12,21 @@
     
     
     <item>
-      <title>Welcome to Arc 2 - Programmatic Geospatial Analysis</title>
-      <link>/2020/08/17/welcome-to-arc-2-programmatic-geospatial-analysis/</link>
+      <title>2-2: Assignment 1 Review and Coordinate Reference Systems</title>
+      <link>/2020/08/31/2-2-assignment-1-review-and-coordinate-reference-systems/</link>
+      <pubDate>Mon, 31 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/08/31/2-2-assignment-1-review-and-coordinate-reference-systems/</guid>
+      <description>OverviewThis week we will go over the script that we developed last session. We will address someof the questions from last week’s assignment and go over the projection issue encounteredin the toy data set. Let’s dive in!
+Today’s Assignment – Looking at North Carolina County Data: Part IIYou will need:The script you wrote last weekPost-work beverage of choicePart 1: Script and Questions ReviewOpen RStudio</description>
+    </item>
+    
+    <item>
+      <title>2-1: Welcome to Arc 2 - Programmatic Geospatial Analysis</title>
+      <link>/2020/08/17/2-1-welcome-to-arc-2-programmatic-geospatial-analysis/</link>
       <pubDate>Mon, 17 Aug 2020 00:00:00 +0000</pubDate>
       
-      <guid>/2020/08/17/welcome-to-arc-2-programmatic-geospatial-analysis/</guid>
+      <guid>/2020/08/17/2-1-welcome-to-arc-2-programmatic-geospatial-analysis/</guid>
       <description>We’re Back – and Interactive!Welcome to the second round of Bio-Group trainings. In this series, we will expand ourGIS and problem-solving toolkits by leveraging the power of computation. To this end,we will use the R programming language and some important associated geospatial packages.Let’s dive in!
 A Brief introduction to the R Programming LanguageSuccinctly, R is free software designed for statisticalcomputing.</description>
     </item>

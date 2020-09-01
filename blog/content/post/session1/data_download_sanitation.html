@@ -90,7 +90,7 @@ if (length(missing_dates) &gt; 0) {
 } else {
     print(&#39;No new data to download!&#39;)
 }</code></pre>
-<pre><code>## [1] &quot;No new data to download!&quot;</code></pre>
+<pre><code>## [1] TRUE</code></pre>
 </div>
 <div id="querying-and-filtering-data" class="section level2">
 <h2>Querying and Filtering Data</h2>
@@ -117,29 +117,41 @@ dbDisconnect(con)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <pre class="r"><code>data.dt</code></pre>
 <pre><code>##             id province_state     country_region last_update confirmed deaths
-##      1: 219336                           Grenada  2020-05-29        23      0
-##      2: 222969                            Zambia  2020-05-30      1057      7
-##      3: 226299        Unknown               Peru  2020-05-31         0      0
-##      4: 226300        Unknown              Spain  2020-05-31         0      0
-##      5: 229848                           Albania  2020-06-01      1137     33
+##      1: 244476                             Ghana  2020-06-05      8885     38
+##      2: 244477                            Greece  2020-06-05      2952    180
+##      3: 244478                           Grenada  2020-06-05        23      0
+##      4: 230022 South Carolina                 US  2020-06-02        44      0
+##      5: 230023      Louisiana                 US  2020-06-02       422     23
 ##     ---                                                                      
-## 348181: 570437                West Bank and Gaza  2020-08-26     20155    137
-## 348182: 570438                    Western Sahara  2020-08-26        10      1
-## 348183: 570439                             Yemen  2020-08-26      1930    560
-## 348184: 570440                            Zambia  2020-08-26     11376    282
-## 348185: 570441                          Zimbabwe  2020-08-26      6251    179
-##         recovered  latitude longitude fips admin2 active       combined_key
-##      1:        18  12.11650 -61.67900   NA             5            Grenada
-##      2:       779 -13.13390  27.84933   NA           271             Zambia
-##      3:     66447        NA        NA   NA        -66447      Unknown, Peru
-##      4:         0        NA        NA   NA             0     Unknown, Spain
-##      5:       872  41.15330  20.16830   NA           232            Albania
-##     ---                                                                    
-## 348181:     13929  31.95220  35.23320   NA          6089 West Bank and Gaza
-## 348182:         8  24.21550 -12.88580   NA             1     Western Sahara
-## 348183:      1097  15.55273  48.51639   NA           273              Yemen
-## 348184:     10693 -13.13390  27.84933   NA           401             Zambia
-## 348185:      5001 -19.01544  29.15486   NA          1071           Zimbabwe</code></pre>
+## 349890: 586237                West Bank and Gaza  2020-08-30     22204    152
+## 349891: 586238                    Western Sahara  2020-08-30        10      1
+## 349892: 586239                             Yemen  2020-08-30      1953    564
+## 349893: 586240                            Zambia  2020-08-30     12025    287
+## 349894: 586241                          Zimbabwe  2020-08-30      6412    196
+##         recovered  latitude longitude  fips    admin2 active
+##      1:      3189   7.94650  -1.02320    NA             5658
+##      2:      1374  39.07420  21.82430    NA             1398
+##      3:        18  12.11650 -61.67900    NA                5
+##      4:         0  34.22333 -82.46171 45001 Abbeville     44
+##      5:         0  30.29506 -92.41420 22001    Acadia    399
+##     ---                                                     
+## 349890:     14787  31.95220  35.23320    NA             7265
+## 349891:         8  24.21550 -12.88580    NA                1
+## 349892:      1123  15.55273  48.51639    NA              266
+## 349893:     11454 -13.13390  27.84933    NA              284
+## 349894:      5061 -19.01544  29.15486    NA             1155
+##                          combined_key
+##      1:                         Ghana
+##      2:                        Greece
+##      3:                       Grenada
+##      4: Abbeville, South Carolina, US
+##      5:         Acadia, Louisiana, US
+##     ---                              
+## 349890:            West Bank and Gaza
+## 349891:                Western Sahara
+## 349892:                         Yemen
+## 349893:                        Zambia
+## 349894:                      Zimbabwe</code></pre>
 <p>Finally, after all that work, we have our data downloaded, cleaned, and in a format
 suitable for analysis. We can begin thinking of questions that we want to
 answer using the data. This is an early step in the exploratory data analysis phase.
