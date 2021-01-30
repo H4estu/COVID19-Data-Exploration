@@ -9,7 +9,7 @@ library(RPostgreSQL)
 # -------- Access the COVID-19 Database --------- #
 source(file.path(git.path,'Code/config_files/db_config.R'))
 con <- db_connect.fn()
-report_data.dt<-dbGetQuery(con,'SELECT * FROM covid_data.report_data') %>% data.table
+report_data.dt<-dbGetQuery(con,"SELECT * FROM covid_data.report_data WHERE country_region = 'US'") %>% data.table
 dbDisconnect(con)  
 # ----------------------------------------------- #
 
@@ -27,5 +27,4 @@ us_data.sf <- st_as_sf(us_data.dt, coords = c("longitude", "latitude"), crs=4326
 
 bound <- st_bbox(c(xmin=-125.77148,ymin=23.24135,xmax=-64.59961, ymax=48.86471))
 
-plot(us_data.sf['confirmed'], extent=bound)
-# )
+# plot(us_data.sf['confirmed'], extent=bound)

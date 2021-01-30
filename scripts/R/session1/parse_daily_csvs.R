@@ -67,7 +67,7 @@ if (length(missing_dates) > 0) {
 # Acquire COVID data from database.  Default to most recent 3-month period
 con <- db_connect.fn()
 end.date <- Sys.Date()
-start.date <- end.date - 90
+start.date <- end.date - 180
 q1 <- "SELECT * FROM covid_data.report_data"
 q2 <- paste0("WHERE last_update >= '", start.date, "'::DATE AND last_update <= '", 
              end.date,"'::DATE")
