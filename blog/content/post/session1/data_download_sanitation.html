@@ -90,7 +90,7 @@ if (length(missing_dates) &gt; 0) {
 } else {
     print(&#39;No new data to download!&#39;)
 }</code></pre>
-<pre><code>## [1] TRUE</code></pre>
+<pre><code>## [1] &quot;No new data to download!&quot;</code></pre>
 </div>
 <div id="querying-and-filtering-data" class="section level2">
 <h2>Querying and Filtering Data</h2>
@@ -116,42 +116,30 @@ data.dt &lt;- dbGetQuery(con, paste(q1, q2)) %&gt;% data.table
 dbDisconnect(con)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <pre class="r"><code>data.dt</code></pre>
-<pre><code>##             id province_state     country_region last_update confirmed deaths
-##      1: 244476                             Ghana  2020-06-05      8885     38
-##      2: 244477                            Greece  2020-06-05      2952    180
-##      3: 244478                           Grenada  2020-06-05        23      0
-##      4: 230022 South Carolina                 US  2020-06-02        44      0
-##      5: 230023      Louisiana                 US  2020-06-02       422     23
-##     ---                                                                      
-## 349890: 586237                West Bank and Gaza  2020-08-30     22204    152
-## 349891: 586238                    Western Sahara  2020-08-30        10      1
-## 349892: 586239                             Yemen  2020-08-30      1953    564
-## 349893: 586240                            Zambia  2020-08-30     12025    287
-## 349894: 586241                          Zimbabwe  2020-08-30      6412    196
-##         recovered  latitude longitude  fips    admin2 active
-##      1:      3189   7.94650  -1.02320    NA             5658
-##      2:      1374  39.07420  21.82430    NA             1398
-##      3:        18  12.11650 -61.67900    NA                5
-##      4:         0  34.22333 -82.46171 45001 Abbeville     44
-##      5:         0  30.29506 -92.41420 22001    Acadia    399
-##     ---                                                     
-## 349890:     14787  31.95220  35.23320    NA             7265
-## 349891:         8  24.21550 -12.88580    NA                1
-## 349892:      1123  15.55273  48.51639    NA              266
-## 349893:     11454 -13.13390  27.84933    NA              284
-## 349894:      5061 -19.01544  29.15486    NA             1155
-##                          combined_key
-##      1:                         Ghana
-##      2:                        Greece
-##      3:                       Grenada
-##      4: Abbeville, South Carolina, US
-##      5:         Acadia, Louisiana, US
-##     ---                              
-## 349890:            West Bank and Gaza
-## 349891:                Western Sahara
-## 349892:                         Yemen
-## 349893:                        Zambia
-## 349894:                      Zimbabwe</code></pre>
+<pre><code>##              id province_state     country_region last_update confirmed deaths
+##      1:  586244                           Algeria  2021-01-01     99897   2762
+##      2:  586245                           Andorra  2021-01-01      8117     84
+##      3:  586246                            Angola  2021-01-01     17568    405
+##      4:  586661                           Moldova  2021-01-01    145258   3004
+##      5:  586662                            Monaco  2021-01-01       885      3
+##     ---                                                                       
+## 357720: 1189306                           Vietnam  2021-01-29      1657     35
+## 357721: 1189307                West Bank and Gaza  2021-01-29    158168   1823
+## 357722: 1189308                             Yemen  2021-01-29      2120    615
+## 357723: 1189309                            Zambia  2021-01-29     51624    728
+## 357724: 1189310                          Zimbabwe  2021-01-29     32952   1178
+##         recovered  latitude longitude fips admin2 active       combined_key
+##      1:     67395  28.03390   1.65960   NA         29740            Algeria
+##      2:      7463  42.50630   1.52180   NA           570            Andorra
+##      3:     11146 -11.20270  17.87390   NA          6017             Angola
+##      4:    131701  47.41160  28.36990   NA         10553            Moldova
+##      5:       718  43.73330   7.41670   NA           164             Monaco
+##     ---                                                                    
+## 357720:      1448  14.05832 108.27720   NA           174            Vietnam
+## 357721:    148140  31.95220  35.23320   NA          8205 West Bank and Gaza
+## 357722:      1425  15.55273  48.51639   NA            80              Yemen
+## 357723:     44133 -13.13390  27.84933   NA          6763             Zambia
+## 357724:     24872 -19.01544  29.15486   NA          6902           Zimbabwe</code></pre>
 <p>Finally, after all that work, we have our data downloaded, cleaned, and in a format
 suitable for analysis. We can begin thinking of questions that we want to
 answer using the data. This is an early step in the exploratory data analysis phase.

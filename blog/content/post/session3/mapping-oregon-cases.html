@@ -179,42 +179,42 @@ subset&lt;-covid.OR[,c(&#39;deaths&#39;,&#39;latitude&#39;, &#39;longitude&#39;,
 subset.expanded &lt;- subset[rep(1:nrow(subset), subset$deaths)]
 # Check out the results
 tail(subset.expanded, 20)</code></pre>
-<pre><code>##     deaths latitude longitude       period
-##  1:     43 45.55973 -123.0955 August 20-31
-##  2:     43 45.55973 -123.0955 August 20-31
-##  3:     43 45.55973 -123.0955 August 20-31
-##  4:     43 45.55973 -123.0955 August 20-31
-##  5:     43 45.55973 -123.0955 August 20-31
-##  6:     43 45.55973 -123.0955 August 20-31
-##  7:     14 45.23330 -123.3087 August 20-31
-##  8:     14 45.23330 -123.3087 August 20-31
-##  9:     14 45.23330 -123.3087 August 20-31
-## 10:     14 45.23330 -123.3087 August 20-31
-## 11:     14 45.23330 -123.3087 August 20-31
-## 12:     14 45.23330 -123.3087 August 20-31
-## 13:     14 45.23330 -123.3087 August 20-31
-## 14:     14 45.23330 -123.3087 August 20-31
-## 15:     14 45.23330 -123.3087 August 20-31
-## 16:     14 45.23330 -123.3087 August 20-31
-## 17:     14 45.23330 -123.3087 August 20-31
-## 18:     14 45.23330 -123.3087 August 20-31
-## 19:     14 45.23330 -123.3087 August 20-31
-## 20:     14 45.23330 -123.3087 August 20-31</code></pre>
+<pre><code>##     deaths latitude longitude        period
+##  1:     52  45.2333 -123.3087 January 20-31
+##  2:     52  45.2333 -123.3087 January 20-31
+##  3:     52  45.2333 -123.3087 January 20-31
+##  4:     52  45.2333 -123.3087 January 20-31
+##  5:     52  45.2333 -123.3087 January 20-31
+##  6:     52  45.2333 -123.3087 January 20-31
+##  7:     52  45.2333 -123.3087 January 20-31
+##  8:     52  45.2333 -123.3087 January 20-31
+##  9:     52  45.2333 -123.3087 January 20-31
+## 10:     52  45.2333 -123.3087 January 20-31
+## 11:     52  45.2333 -123.3087 January 20-31
+## 12:     52  45.2333 -123.3087 January 20-31
+## 13:     52  45.2333 -123.3087 January 20-31
+## 14:     52  45.2333 -123.3087 January 20-31
+## 15:     52  45.2333 -123.3087 January 20-31
+## 16:     52  45.2333 -123.3087 January 20-31
+## 17:     52  45.2333 -123.3087 January 20-31
+## 18:     52  45.2333 -123.3087 January 20-31
+## 19:     52  45.2333 -123.3087 January 20-31
+## 20:     52  45.2333 -123.3087 January 20-31</code></pre>
 <pre class="r"><code># Next we are going to summarize our data for the point based heat map that we are going to do.
 subset.summary&lt;- subset[,.(deaths=sum(deaths)), by=c(&#39;period&#39;,&#39;latitude&#39;, &#39;longitude&#39;)]
 print(subset.summary)</code></pre>
-<pre><code>##            period latitude longitude deaths
-##   1:  March 20-31 45.55973 -123.0955     24
-##   2:  March 20-31 44.90288 -122.5815     22
-##   3:  March 20-31 45.54748 -122.4169     18
-##   4:  March 20-31 44.48899 -122.5373     12
-##   5:  March 20-31 45.18787 -122.2180     17
-##  ---                                       
-## 543: August 20-31 45.57894 -117.1835     11
-## 544: August 20-31 45.16293 -121.1671     33
-## 545: August 20-31 45.55973 -123.0955    397
-## 546: August 20-31 44.72698 -120.0281      0
-## 547: August 20-31 45.23330 -123.3087    152</code></pre>
+<pre><code>##               period latitude longitude deaths
+##    1:    March 20-31 45.55973 -123.0955     24
+##    2:    March 20-31 44.90288 -122.5815     22
+##    3:    March 20-31 45.54748 -122.4169     18
+##    4:    March 20-31 44.48899 -122.5373     12
+##    5:    March 20-31 45.18787 -122.2180     17
+##   ---                                         
+## 1083: December 20-31 45.57894 -117.1835     36
+## 1084: December 20-31 45.16293 -121.1671    258
+## 1085: December 20-31 45.55973 -123.0955   1655
+## 1086: December 20-31 44.72698 -120.0281      2
+## 1087: December 20-31 45.23330 -123.3087    400</code></pre>
 <p>That was a lot of work, but now we are finally ready to make our map! We will use the <code>maps</code> package
 to generate a nice Oregon-shaped polygon and then use our old friend <code>ggplot2</code> to plot create point
 and heat maps of the dataset.</p>
