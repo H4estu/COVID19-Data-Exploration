@@ -21,12 +21,24 @@ plotted all case types together using a base-10 log-transform on the y-axis (so 
 git.path <- Sys.getenv('HOME')
 source(file.path(git.path,'Code/COVID19-Data-Exploration/scripts/R/session1/parse_daily_csvs.R'))
 
-melted.dt <- melt(country_cases.dt, id.vars='last_update', variable.name = 'Cases', 
-                  value.name='Number.Reported')
-ggplot(melted.dt, aes(x=last_update, y=Number.Reported, color=Cases)) +
-    geom_point() + 
-    geom_line() +
-    scale_y_continuous(trans='log10')
+us.cases <- data.dt[data.dt$country_region==country.switch,]
+us.cases[, datenum := format(last_update, '%Y-%m-%b')]
+us.cases[, month := format(last_update, '%b-%Y')]  # For plot label
+
+us.cases.by.month <- us.cases %>% group_by(last_update, datenum, month) %>% 
+    summarize(confirmed=sum(confirmed), deaths=sum(deaths)) %>% group_by(datenum, month) %>%
+    summarize(confirmed=max(confirmed), deaths=max(deaths)) %>% data.table
+
+ggplot(us.cases.by.month, aes(x=datenum, y=confirmed, fill=datenum)) +
+    geom_col() +
+    ggtitle('Confirmed Cases by Month') +
+    xlab('Month')
+
+ggplot(us.cases.by.month, aes(x=datenum, y=deaths, fill=datenum)) +
+    geom_col() +
+    ggtitle('Deaths by Month') +
+    xlab('Month')
+
 
 ```
 
@@ -48,7 +60,7 @@ Additionally, I demoed a small example using the simple features library (`sf`) 
 ```{r session-2, echo=FALSE}
 source(file.path(git.path,'Code/COVID19-Data-Exploration/scripts/R/session2/sf_example_simple.R'))
 
-plot(us_data.sf['confirmed'], extent=bound)
+plot(us_data.sf['confirmed'], extent=bound, main = 'Case density in US')
 ```
 
 ## [Session 3: Mapping COVID-19 Cases in Oregon](https://bioanalytics-cvo-quantumspatial.netlify.app/2020/04/27/mapping-covid-19-cases-in-oregon/)
